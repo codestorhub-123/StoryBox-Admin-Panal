@@ -63,7 +63,18 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           {dictionary['navigation'].user}
         </MenuItem>
         <MenuSection label='FILM MANAGEMENT'>
+          <MenuItem href={`/${locale}/apps/category/list`} icon={<i className='tabler-category' />}>
+             Film Category
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/story/list`} icon={<i className='tabler-movie' />}>
+             Film List
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/episode/list`} icon={<i className='tabler-video' />}>
+             Episode List
+          </MenuItem>
+          
         </MenuSection>
+
       </Menu>
     </ScrollWrapper>
   )
