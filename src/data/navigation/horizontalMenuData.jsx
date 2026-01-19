@@ -9,16 +9,7 @@ const horizontalMenuData = dictionary => [
   {
     label: dictionary['navigation'].user,
     icon: 'tabler-user',
-    children: [
-      {
-        label: dictionary['navigation'].list,
-        href: '/apps/user/list'
-      },
-      {
-        label: dictionary['navigation'].view,
-        href: '/apps/user/view'
-      }
-    ]
+    href: '/apps/user/list'
   }
 ]
 

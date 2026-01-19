@@ -21,9 +21,11 @@ const AuthProvider = ({ children, lang }) => {
       try {
         const result = await clone.json()
         
-        // Check for specific error code 2002 (TokenExpiredError or JsonWebTokenError)
-        // Adjust this check based on your actual API response structure
-        if (response.status === 401 && result?.code === 2002) {
+        // Check for specific error code 2002 or jwt expired message
+        if (
+          response.status === 401 && 
+          (result?.code === 2002 || result?.error === 'jwt expired' || result?.message === 'Invalid token')
+        ) {
             localStorage.removeItem('token')
             localStorage.removeItem('admin')
             localStorage.removeItem('userData')

@@ -82,9 +82,6 @@ const UserDropdown = () => {
       window.location.href = getLocalizedUrl('/login', locale || 'en')
     } catch (error) {
       console.error(error)
-
-      // Show above error in a toast like following
-      // toastService.error((err as Error).message)
     }
   }
 

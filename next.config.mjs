@@ -22,7 +22,8 @@ const nextConfig = {
         locale: false
       }
     ]
-  }
+  },
+  reactStrictMode: false
 }
 
 export default nextConfig
