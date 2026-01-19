@@ -21,6 +21,14 @@ export const adminLogin = async (data) => {
     return { ok: res.ok, result }
   }
 
+export const getAdminProfile = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/profile`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
 export const getUsers = async (params) => {
     const queryString = new URLSearchParams(params).toString()
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/get?${queryString}`, {
@@ -33,6 +41,23 @@ export const getUsers = async (params) => {
 export const toggleUserBlock = async (id) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/toggle-block?id=${id}`, {
         method: 'PATCH',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const getUserDetail = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/detail?id=${id}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const getCoinHistory = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/get-coin-history?${queryString}`, {
         headers: getAuthHeaders()
     })
     const result = await res.json()

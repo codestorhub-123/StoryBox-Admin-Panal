@@ -135,8 +135,10 @@ const StoryListTable = () => {
       video: null,
       videoUrl: '',
       thumbnailPreview: '',
-      coins: 0
+      coin: 0
   })
+  const [editingEpisodeId, setEditingEpisodeId] = useState(null)
+  const [isEpisodeEditMode, setIsEpisodeEditMode] = useState(false)
 
   // Format image helper
   const getImageUrl = (path) => {
@@ -279,7 +281,16 @@ const StoryListTable = () => {
             
             setEpisodeFormData(prev => ({
                 ...prev, 
-                episodeNumber: maxEp + 1
+                episodeNumber: maxEp + 1,
+                name: `Ep ${maxEp + 1}`,
+                description: '',
+                isFree: true,
+                type: 'episode',
+                videoUrl: '',
+                video: null,
+                thumbnail: null,
+                thumbnailPreview: '',
+                coin: 0
             }))
         } else {
             toast.error(result.message || 'Failed to fetch episodes')
@@ -296,7 +307,7 @@ const StoryListTable = () => {
       
       let finalThumbnail = episodeFormData.thumbnail
 
-      // Auto-capture thumbnail from video if not provided
+      // Auto-capture thumbnail if missing and video exists
       if(!finalThumbnail && episodeFormData.video) {
         try {
             const video = document.createElement('video')
@@ -330,37 +341,68 @@ const StoryListTable = () => {
       submitData.append('description', episodeFormData.description)
       submitData.append('isFree', episodeFormData.isFree)
       submitData.append('type', episodeFormData.type)
-      submitData.append('coins', episodeFormData.coins)
+      submitData.append('coin', episodeFormData.coin)
       
       if(episodeFormData.videoUrl) submitData.append('videoUrl', episodeFormData.videoUrl)
       if(finalThumbnail) submitData.append('thumbnail', finalThumbnail)
       if(episodeFormData.video) submitData.append('video', episodeFormData.video)
 
       try {
-          const { ok, result } = await createEpisode(submitData)
+          const { ok, result } = isEpisodeEditMode 
+            ? await updateEpisode(editingEpisodeId, submitData)
+            : await createEpisode(submitData)
+
           if(ok && result.success) {
-              toast.success('Episode added successfully')
+              toast.success(`Episode ${isEpisodeEditMode ? 'updated' : 'added'} successfully`)
               setAddEpisodeOpen(false)
+              setIsEpisodeEditMode(false)
+              setEditingEpisodeId(null)
+              
               // Refresh episodes list
-              handleViewEpisodes({_id: selectedStoryId, title: selectedStoryTitle})
-              // Reset episode form
-              setEpisodeFormData({
-                episodeNumber: '',
-                name: '',
-                description: '',
-                isFree: true,
-                type: 'episode',
-                thumbnail: null,
-                video: null,
-                videoUrl: '',
-                thumbnailPreview: '',
-                coins: 0
-              })
+              const storyRes = await getStoryDetail(selectedStoryId)
+              if(storyRes.ok && storyRes.result.success) {
+                  setEpisodes(storyRes.result.data.episodes || [])
+              }
           } else {
-              toast.error(result.message || 'Failed to add episode')
+              toast.error(result.message || 'Error occurred')
           }
       } catch (err) {
-          toast.error('Error creating episode')
+          toast.error('Operation failed')
+      }
+  }
+
+  const handleEditEpisode = (episode) => {
+      setIsEpisodeEditMode(true)
+      setEditingEpisodeId(episode._id)
+      setEpisodeFormData({
+          episodeNumber: episode.episodeNumber,
+          name: episode.name || '',
+          description: episode.description || '',
+          isFree: episode.isFree || false,
+          type: episode.type || 'episode',
+          thumbnail: null,
+          video: null,
+          videoUrl: episode.videoUrl || '',
+          thumbnailPreview: getImageUrl(episode.thumbnail),
+          coin: episode.coin || 0
+      })
+      setAddEpisodeOpen(true)
+  }
+
+  const handleDeleteEpisode = async (id) => {
+      if(window.confirm('Are you sure you want to delete this episode?')) {
+          try {
+              const { ok, result } = await deleteEpisode(id)
+              if(ok && result.success) {
+                  toast.success('Episode deleted')
+                  const storyRes = await getStoryDetail(selectedStoryId)
+                  if(storyRes.ok && storyRes.result.success) {
+                      setEpisodes(storyRes.result.data.episodes || [])
+                  }
+              }
+          } catch (err) {
+              toast.error('Delete failed')
+          }
       }
   }
 
@@ -813,9 +855,10 @@ const StoryListTable = () => {
                             <tr className='bg-backgroundDefault'>
                                 <th className='font-bold uppercase text-[11px] p-4 border-b'>NO</th>
                                 <th className='font-bold uppercase text-[11px] p-4 border-b'>VIDEO IMAGE</th>
-                                <th className='font-bold uppercase text-[11px] p-4 border-b'>EPISODE NUMBER</th>
+                                <th className='font-bold uppercase text-[11px] p-4 border-b text-left'>EPISODE NAME</th>
+                                <th className='font-bold uppercase text-[11px] p-4 border-b text-center'>EPISODE NO</th>
                                 <th className='font-bold uppercase text-[11px] p-4 border-b'>LOCKED STATUS</th>
-                                <th className='font-bold uppercase text-[11px] p-4 border-b'>COINS</th>
+                                <th className='font-bold uppercase text-[11px] p-4 border-b'>COIN</th>
                                 <th className='font-bold uppercase text-[11px] p-4 border-b'>DATE</th>
                                 <th className='font-bold uppercase text-[11px] p-4 border-b'>VIEW VIDEO</th>
                             </tr>
@@ -842,9 +885,17 @@ const StoryListTable = () => {
                                                 className='w-[60px] h-[80px] object-cover rounded-lg shadow-sm'
                                             />
                                         </td>
+                                        <td className='p-4 border-b'>
+                                            <Typography className='font-medium text-primary'>
+                                                {episode.name || '-'}
+                                            </Typography>
+                                            <Typography variant='caption' className='block'>
+                                                {episode.type?.toUpperCase()}
+                                            </Typography>
+                                        </td>
                                         <td className='p-4 border-b text-center'>
-                                            <Typography className='font-medium text-textSecondary'>
-                                                {index === 0 ? 'Trailer' : index}
+                                            <Typography className='font-medium'>
+                                                {episode.type === 'trailer' ? 'Trailer' : episode.episodeNumber}
                                             </Typography>
                                         </td>
                                         <td className='p-4 border-b text-center'>
@@ -853,16 +904,32 @@ const StoryListTable = () => {
                                                 'text-2xl'
                                             )} />
                                         </td>
-                                        <td className='p-4 border-b text-center'><Typography>{episode.coins || 0}</Typography></td>
+                                        <td className='p-4 border-b text-center'><Typography>{episode.coin || 0}</Typography></td>
                                         <td className='p-4 border-b'><Typography>{new Date(episode.createdAt).toLocaleDateString('en-GB')}</Typography></td>
                                         <td className='p-4 border-b text-center'>
-                                            <IconButton 
-                                                size='small' 
-                                                className='bg-actionSelected hover:bg-actionHover'
-                                                onClick={() => handlePlayVideo(episode.videoUrl)}
-                                            >
-                                                <i className='tabler-eye text-textSecondary text-lg' />
-                                            </IconButton>
+                                            <div className='flex items-center justify-center gap-1'>
+                                                <IconButton 
+                                                    size='small' 
+                                                    onClick={() => handlePlayVideo(episode.videoUrl)}
+                                                    className='text-primary'
+                                                >
+                                                    <i className='tabler-eye text-lg' />
+                                                </IconButton>
+                                                <IconButton 
+                                                    size='small' 
+                                                    onClick={() => handleEditEpisode(episode)}
+                                                    className='text-info'
+                                                >
+                                                    <i className='tabler-edit text-lg' />
+                                                </IconButton>
+                                                <IconButton 
+                                                    size='small' 
+                                                    onClick={() => handleDeleteEpisode(episode._id)}
+                                                    className='text-error'
+                                                >
+                                                    <i className='tabler-trash text-lg' />
+                                                </IconButton>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -912,8 +979,8 @@ const StoryListTable = () => {
       </Dialog>
 
       {/* Add Episode Dialog */}
-      <Dialog open={addEpisodeOpen} onClose={() => setAddEpisodeOpen(false)} fullWidth maxWidth='md'>
-          <DialogTitle>Add New Episode to {selectedStoryTitle}</DialogTitle>
+      <Dialog open={addEpisodeOpen} onClose={() => {setAddEpisodeOpen(false); setIsEpisodeEditMode(false);}} fullWidth maxWidth='md'>
+          <DialogTitle>{isEpisodeEditMode ? 'Edit Episode' : `Add New Episode to ${selectedStoryTitle}`}</DialogTitle>
           <DialogContent>
               <div className='flex flex-col gap-4 p-4'>
                   <div className='flex gap-4 justify-center'>
@@ -941,12 +1008,12 @@ const StoryListTable = () => {
                         value={episodeFormData.episodeNumber}
                         onChange={(e) => setEpisodeFormData({...episodeFormData, episodeNumber: e.target.value})}
                     />
-                     <CustomTextField
+                      <CustomTextField
                         fullWidth
                         type='number'
-                        label='Coins'
-                        value={episodeFormData.coins}
-                        onChange={(e) => setEpisodeFormData({...episodeFormData, coins: e.target.value})}
+                        label='Coin'
+                        value={episodeFormData.coin}
+                        onChange={(e) => setEpisodeFormData({...episodeFormData, coin: e.target.value})}
                     />
                      <div className='flex items-center gap-4'>
                        <FormControl component="fieldset">

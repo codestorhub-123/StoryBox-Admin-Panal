@@ -1,39 +1,70 @@
+'use client'
+
+// React Imports
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Component Imports
-import EditUserInfo from '@components/dialogs/edit-user-info'
-import ConfirmationDialog from '@components/dialogs/confirmation-dialog'
-import OpenDialogOnElementClick from '@components/dialogs/OpenDialogOnElementClick'
 import CustomAvatar from '@core/components/mui/Avatar'
 
-// Vars
-const userData = {
-  firstName: 'Seth',
-  lastName: 'Hallam',
-  userName: '@shallamb',
-  billingEmail: 'shallamb@gmail.com',
-  status: 'active',
-  role: 'Subscriber',
-  taxId: 'Tax-8894',
-  contact: '+1 (234) 464-0600',
-  language: ['English'],
-  country: 'France',
-  useAsBillingAddress: true
-}
+// Service Imports
+import { getUserDetail } from '@/services/ApiService'
 
 const UserDetails = () => {
-  // Vars
-  const buttonProps = (children, color, variant) => ({
-    children,
-    color,
-    variant
-  })
+  // Hooks
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+
+  // States
+  const [userData, setUserData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        if(!id) return
+        setLoading(true)
+        try {
+            const { ok, result } = await getUserDetail(id)
+            if(ok && result.success) {
+                setUserData(result.data)
+            }
+        } catch (error) {
+            console.error('Failed to fetch user details', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    fetchUser()
+  }, [id])
+
+  if(loading) {
+      return (
+          <Card>
+              <CardContent className='flex justify-center items-center min-h-[400px]'>
+                  <CircularProgress />
+              </CardContent>
+          </Card>
+      )
+  }
+
+  if(!userData) {
+      return (
+        <Card>
+            <CardContent className='flex justify-center items-center min-h-[200px]'>
+                <Typography>User not found</Typography>
+            </CardContent>
+        </Card>
+      )
+  }
 
   return (
     <>
@@ -42,28 +73,29 @@ const UserDetails = () => {
           <div className='flex flex-col gap-6'>
             <div className='flex items-center justify-center flex-col gap-4'>
               <div className='flex flex-col items-center gap-4'>
-                <CustomAvatar alt='user-profile' src='/images/avatars/1.png' variant='rounded' size={120} />
-                <Typography variant='h5'>{`${userData.firstName} ${userData.lastName}`}</Typography>
+                <CustomAvatar 
+                    alt={userData.name} 
+                    src={userData.image} 
+                    variant='rounded' 
+                    size={120} 
+                />
+                <Typography variant='h5'>{userData.name}</Typography>
               </div>
-              <Chip label='Author' color='secondary' size='small' variant='tonal' />
+              <Chip 
+                label={userData.isBlocked ? 'Blocked' : 'Active'} 
+                color={userData.isBlocked ? 'error' : 'success'} 
+                size='small' 
+                variant='tonal' 
+              />
             </div>
             <div className='flex items-center justify-around flex-wrap gap-4'>
               <div className='flex items-center gap-4'>
                 <CustomAvatar variant='rounded' color='primary' skin='light'>
-                  <i className='tabler-checkbox' />
+                  <i className='tabler-coin' />
                 </CustomAvatar>
                 <div>
-                  <Typography variant='h5'>1.23k</Typography>
-                  <Typography>Task Done</Typography>
-                </div>
-              </div>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar variant='rounded' color='primary' skin='light'>
-                  <i className='tabler-briefcase' />
-                </CustomAvatar>
-                <div>
-                  <Typography variant='h5'>568</Typography>
-                  <Typography>Project Done</Typography>
+                  <Typography variant='h5'>{userData.coins || 0}</Typography>
+                  <Typography>Coins</Typography>
                 </div>
               </div>
             </div>
@@ -74,67 +106,43 @@ const UserDetails = () => {
             <div className='flex flex-col gap-2'>
               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Username:
+                  Unique ID:
                 </Typography>
-                <Typography>{userData.userName}</Typography>
+                <Typography>{userData.uniqueId}</Typography>
               </div>
               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Billing Email:
+                  Email:
                 </Typography>
-                <Typography>{userData.billingEmail}</Typography>
+                <Typography>{userData.email || '-'}</Typography>
               </div>
               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Status
+                  Mobile:
                 </Typography>
-                <Typography color='text.primary'>{userData.status}</Typography>
+                <Typography color='text.primary'>
+                    {userData.mobileNumber ? `${userData.mobilePrefix || ''} ${userData.mobileNumber}` : '-'}
+                </Typography>
               </div>
               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Role:
+                  Gender:
                 </Typography>
-                <Typography color='text.primary'>{userData.role}</Typography>
+                <Typography color='text.primary' className='capitalize'>{userData.gender || '-'}</Typography>
               </div>
               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Tax ID:
+                  Login Type:
                 </Typography>
-                <Typography color='text.primary'>{userData.taxId}</Typography>
+                <Typography color='text.primary' className='capitalize'>{userData.loginType || '-'}</Typography>
               </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
+               <div className='flex items-center flex-wrap gap-x-1.5'>
                 <Typography className='font-medium' color='text.primary'>
-                  Contact:
+                  Last Active:
                 </Typography>
-                <Typography color='text.primary'>{userData.contact}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Language:
-                </Typography>
-                <Typography color='text.primary'>{userData.language}</Typography>
-              </div>
-              <div className='flex items-center flex-wrap gap-x-1.5'>
-                <Typography className='font-medium' color='text.primary'>
-                  Country:
-                </Typography>
-                <Typography color='text.primary'>{userData.country}</Typography>
+                <Typography color='text.primary'>{new Date(userData.updatedAt).toLocaleDateString()}</Typography>
               </div>
             </div>
-          </div>
-          <div className='flex gap-4 justify-center'>
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={buttonProps('Edit', 'primary', 'contained')}
-              dialog={EditUserInfo}
-              dialogProps={{ data: userData }}
-            />
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={buttonProps('Suspend', 'error', 'tonal')}
-              dialog={ConfirmationDialog}
-              dialogProps={{ type: 'suspend-account' }}
-            />
           </div>
         </CardContent>
       </Card>

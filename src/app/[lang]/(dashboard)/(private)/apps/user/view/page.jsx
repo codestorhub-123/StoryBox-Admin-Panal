@@ -19,11 +19,9 @@ const ConnectionsTab = dynamic(() => import('@views/apps/user/view/user-right/co
 
 // Vars
 const tabContentList = data => ({
-  overview: <OverViewTab />,
-  security: <SecurityTab />,
-  'billing-plans': <BillingPlans data={data} />,
-  notifications: <NotificationsTab />,
-  connections: <ConnectionsTab />
+  'coin-history': <OverViewTab />,
+  'coin-plan-history': <div>Coin Plan History Content</div>,
+  'vip-plan-history': <div>VIP Plan History Content</div>
 })
 
 /**

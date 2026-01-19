@@ -25,7 +25,7 @@ import DialogActions from '@mui/material/DialogActions'
 
 // Component Imports
 import EditUserDialog from '@/components/dialogs/EditUserDialog'
-import UserDetailsDialog from '@/components/dialogs/UserDetailsDialog'
+
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -91,7 +91,7 @@ const UserListTable = () => {
   const [rowCount, setRowCount] = useState(0)
   const [globalFilter, setGlobalFilter] = useState('')
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [viewDialogOpen, setViewDialogOpen] = useState(false)
+
   const [editingUser, setEditingUser] = useState(null)
 
   // Hooks
@@ -145,10 +145,7 @@ const UserListTable = () => {
     setEditDialogOpen(true)
   }
 
-  const handleViewClick = (user) => {
-    setEditingUser(user)
-    setViewDialogOpen(true)
-  }
+
 
   const handleUpdateName = async (id, name) => {
     if(!name.trim()) return toast.error('Name cannot be empty')
@@ -184,10 +181,14 @@ const UserListTable = () => {
             </div>
           </div>
         )
-      }),
+      }),    
       columnHelper.accessor('email', {
         header: 'Email',
-        cell: ({ row }) => <Typography>{row.original.email}</Typography>
+        cell: ({ row }) => <Typography>{row.original.email ? row.original.email : '-'}</Typography>
+      }),
+       columnHelper.accessor('loginType', {
+        header: 'loginType',
+        cell: ({ row }) => <Typography>{row.original.loginType}</Typography>
       }),
       columnHelper.accessor('mobileNumber', {
         header: 'Mobile',
@@ -196,6 +197,10 @@ const UserListTable = () => {
       columnHelper.accessor('gender', {
         header: 'Gender',
         cell: ({ row }) => <Typography className='capitalize'>{row.original.gender}</Typography>
+      }),
+         columnHelper.accessor('coins', {
+        header: 'Coins',
+        cell: ({ row }) => <Typography className='capitalize'>{row.original.coins}</Typography>
       }),
       columnHelper.accessor('isBlocked', {
         header: 'Block',
@@ -214,7 +219,7 @@ const UserListTable = () => {
             <IconButton onClick={() => handleEditClick(row.original)}>
               <i className='tabler-edit text-textSecondary' />
             </IconButton>
-            <IconButton onClick={() => handleViewClick(row.original)}>
+            <IconButton component={Link} href={`/${locale}/apps/user/view?id=${row.original._id}`}>
               <i className='tabler-eye text-textSecondary' />
             </IconButton>
              <IconButton>
@@ -327,11 +332,7 @@ const UserListTable = () => {
          user={editingUser} 
          handleUpdateName={handleUpdateName} 
       />
-      <UserDetailsDialog
-         open={viewDialogOpen}
-         setOpen={setViewDialogOpen}
-         user={editingUser}
-      />
+
     </Card>
   )
 }

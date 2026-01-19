@@ -74,6 +74,11 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           </MenuItem>
           
         </MenuSection>
+        <MenuSection label='OTHERS'>
+           <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>
+             Profile
+          </MenuItem>
+        </MenuSection>
 
       </Menu>
     </ScrollWrapper>

@@ -1,45 +1,34 @@
+'use client'
+
+// React Imports
+import { useState, useEffect } from 'react'
+
 // MUI Imports
 import Grid from '@mui/material/Grid2'
 import Card from '@mui/material/Card'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
-const renderList = list => {
-  return (
-    list.length > 0 &&
-    list.map((item, index) => {
-      return (
-        <div key={index} className='flex items-center gap-2'>
-          <i className={item.icon} />
-          <div className='flex items-center flex-wrap gap-2'>
-            <Typography className='font-medium'>
-              {`${item.property.charAt(0).toUpperCase() + item.property.slice(1)}:`}
-            </Typography>
-            <Typography> {item.value.charAt(0).toUpperCase() + item.value.slice(1)}</Typography>
-          </div>
-        </div>
-      )
-    })
-  )
-}
+// Service Imports
+import { getAdminProfile } from '@/services/ApiService'
 
-const renderTeams = teams => {
-  return (
-    teams.length > 0 &&
-    teams.map((item, index) => {
-      return (
-        <div key={index} className='flex items-center flex-wrap gap-2'>
-          <Typography className='font-medium'>
-            {item.property.charAt(0).toUpperCase() + item.property.slice(1)}
-          </Typography>
-          <Typography>{item.value.charAt(0).toUpperCase() + item.value.slice(1)}</Typography>
-        </div>
-      )
-    })
-  )
-}
+const AboutOverview = () => {
+    const [data, setData] = useState(null)
 
-const AboutOverview = ({ data }) => {
+    useEffect(() => {
+        const fetchProfile = async () => {
+             try {
+                 const { ok, result } = await getAdminProfile()
+                 if(ok && result.success) {
+                     setData(result.data)
+                 }
+             } catch (error) {
+                 console.error('Failed to fetch admin profile')
+             }
+        }
+        fetchProfile()
+    }, [])
+
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
@@ -49,31 +38,47 @@ const AboutOverview = ({ data }) => {
               <Typography className='uppercase' variant='body2' color='text.disabled'>
                 About
               </Typography>
-              {data?.about && renderList(data?.about)}
-            </div>
-            <div className='flex flex-col gap-4'>
-              <Typography className='uppercase' variant='body2' color='text.disabled'>
-                Contacts
-              </Typography>
-              {data?.contacts && renderList(data?.contacts)}
-            </div>
-            <div className='flex flex-col gap-4'>
-              <Typography className='uppercase' variant='body2' color='text.disabled'>
-                Teams
-              </Typography>
-              {data?.teams && renderTeams(data?.teams)}
-            </div>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12 }}>
-        <Card>
-          <CardContent className='flex flex-col gap-6'>
-            <div className='flex flex-col gap-4'>
-              <Typography className='uppercase' variant='body2' color='text.disabled'>
-                Overview
-              </Typography>
-              {data?.overview && renderList(data?.overview)}
+              {data ? (
+                  <div className='flex flex-col gap-4'>
+                    <div className='flex items-center gap-2'>
+                        <i className='tabler-user' />
+                        <div className='flex items-center flex-wrap gap-2'>
+                            <Typography className='font-medium'>Full Name:</Typography>
+                            <Typography>{data.username}</Typography>
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <i className='tabler-mail' />
+                        <div className='flex items-center flex-wrap gap-2'>
+                            <Typography className='font-medium'>Email:</Typography>
+                            <Typography>{data.email}</Typography>
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <i className='tabler-crown' />
+                        <div className='flex items-center flex-wrap gap-2'>
+                            <Typography className='font-medium'>Role:</Typography>
+                            <Typography className='capitalize'>{data.role || 'Admin'}</Typography>
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <i className='tabler-check' />
+                        <div className='flex items-center flex-wrap gap-2'>
+                            <Typography className='font-medium'>Status:</Typography>
+                            <Typography>Active</Typography>
+                        </div>
+                    </div>
+                     <div className='flex items-center gap-2'>
+                        <i className='tabler-calendar' />
+                        <div className='flex items-center flex-wrap gap-2'>
+                            <Typography className='font-medium'>Joined Date:</Typography>
+                            <Typography>{new Date(data.createdAt).toLocaleDateString()}</Typography>
+                        </div>
+                    </div>
+                  </div>
+              ) : (
+                  <Typography>Loading...</Typography>
+              )}
             </div>
           </CardContent>
         </Card>

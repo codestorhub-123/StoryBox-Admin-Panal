@@ -19,6 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Grid from '@mui/material/Grid'
+import Chip from '@mui/material/Chip'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Radio from '@mui/material/Radio'
@@ -84,7 +85,7 @@ const EpisodeListTable = () => {
       video: null,
       videoUrl: '',
       thumbnailPreview: '',
-      coins: 0
+      coin: 0
   })
 
   // Format image helper
@@ -105,7 +106,7 @@ const EpisodeListTable = () => {
         video: null,
         videoUrl: '',
         thumbnailPreview: '',
-        coins: 0
+        coin: 0
       })
       setEditMode(false)
       setCurrentEpisode(null)
@@ -235,7 +236,7 @@ const EpisodeListTable = () => {
           video: null,
           videoUrl: episode.videoUrl || '',
           thumbnailPreview: getImageUrl(episode.thumbnail),
-          coins: episode.coins || 0
+          coin: episode.coin || 0
       })
       setOpen(true)
   }
@@ -285,7 +286,7 @@ const EpisodeListTable = () => {
       submitData.append('description', formData.description)
       submitData.append('isFree', formData.isFree)
       submitData.append('type', formData.type)
-      submitData.append('coins', formData.coins)
+      submitData.append('coin', formData.coin)
       
       if(formData.videoUrl) submitData.append('videoUrl', formData.videoUrl)
       if(finalThumbnail) submitData.append('thumbnail', finalThumbnail)
@@ -401,14 +402,10 @@ const EpisodeListTable = () => {
           header: 'Status',
           cell: ({ row }) => (
             <div className='flex items-center gap-1'>
-                 {row.original.isFree ? (
-                     <i className='tabler-lock-open text-success' title='Free' />
-                 ) : (
-                     <i className='tabler-lock text-error' title='Paid' />
-                 )}
-                 <Typography variant='body2'>{row.original.coins || 0} Coins</Typography>
-            </div>
-          )
+                 {row.original.isFree ? <i className='tabler-lock-open text-success' /> : <i className='tabler-lock text-error' />}
+            <Chip label={`${row.original.coin || 0} Coin`} size='small' variant='tonal' color={row.original.isFree ? 'success' : 'warning'} className='text-[10px] h-5' />
+          </div>
+        )
       }),
       columnHelper.accessor('createdAt', {
         header: 'Date',
@@ -577,9 +574,9 @@ const EpisodeListTable = () => {
                      <CustomTextField
                         fullWidth
                         type='number'
-                        label='Coins'
-                        value={formData.coins}
-                        onChange={(e) => setFormData({...formData, coins: e.target.value})}
+                        label='Coin'
+                        value={formData.coin}
+                        onChange={(e) => setFormData({...formData, coin: e.target.value})}
                     />
                      <div className='flex items-center gap-4'>
                        <FormControl component="fieldset">

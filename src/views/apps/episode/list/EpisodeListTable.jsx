@@ -117,7 +117,7 @@ const GlobalEpisodeListTable = () => {
       video: null,
       videoUrl: '',
       thumbnailPreview: '',
-      coins: 0
+      coin: 0
   })
 
   // Format image helper
@@ -151,7 +151,7 @@ const GlobalEpisodeListTable = () => {
         video: null,
         videoUrl: '',
         thumbnailPreview: '',
-        coins: 0
+        coin: 0
     })
     setEditMode(false)
     setCurrentEpisode(null)
@@ -257,7 +257,7 @@ const GlobalEpisodeListTable = () => {
         video: null,
         videoUrl: episode.videoUrl || '',
         thumbnailPreview: getImageUrl(episode.thumbnail),
-        coins: episode.coins || 0
+        coin: episode.coin || 0
     })
     setOpen(true)
 }
@@ -303,7 +303,7 @@ const handleSubmit = async () => {
     submitData.append('description', formData.description)
     submitData.append('isFree', formData.isFree)
     submitData.append('type', formData.type)
-    submitData.append('coins', formData.coins)
+    submitData.append('coin', formData.coin)
     
     if(formData.videoUrl) submitData.append('videoUrl', formData.videoUrl)
     if(finalThumbnail) submitData.append('thumbnail', finalThumbnail)
@@ -439,7 +439,7 @@ const handleFileChange = async (e, field) => {
         cell: ({ row }) => (
           <div className='flex items-center gap-1'>
             {row.original.isFree ? <i className='tabler-lock-open text-success' /> : <i className='tabler-lock text-error' />}
-            <Chip label={`${row.original.coins || 0} Coins`} size='small' variant='tonal' color={row.original.isFree ? 'success' : 'warning'} className='text-[10px] h-5' />
+            <Chip label={`${row.original.coin || 0} Coin`} size='small' variant='tonal' color={row.original.isFree ? 'success' : 'warning'} className='text-[10px] h-5' />
           </div>
         )
       }),
@@ -568,9 +568,9 @@ const handleFileChange = async (e, field) => {
                      <CustomTextField
                         fullWidth
                         type='number'
-                        label='Coins'
-                        value={formData.coins}
-                        onChange={(e) => setFormData({...formData, coins: e.target.value})}
+                        label='Coin'
+                        value={formData.coin}
+                        onChange={(e) => setFormData({...formData, coin: e.target.value})}
                     />
                   </div>
 

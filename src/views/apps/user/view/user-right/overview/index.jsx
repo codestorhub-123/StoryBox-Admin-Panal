@@ -1,43 +1,89 @@
+'use client'
+
+// React Imports
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+
 // MUI Imports
 import Grid from '@mui/material/Grid2'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import Table from '@mui/material/Table'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import TableCell from '@mui/material/TableCell'
+import TableBody from '@mui/material/TableBody'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
-// Component Imports
-import ProjectListTable from './ProjectListTable'
-import UserActivityTimeLine from './UserActivityTimeline'
-import InvoiceListTable from './InvoiceListTable'
+// Service Imports
+import { getCoinHistory } from '@/services/ApiService'
 
-// Data Imports
-import { getInvoiceData } from '@/app/server/actions'
+const OverViewTab = () => {
+    const searchParams = useSearchParams()
+    const id = searchParams.get('id')
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
 
-/**
- * ! If you need data using an API call, uncomment the below API code, update the `process.env.API_URL` variable in the
- * ! `.env` file found at root of your project and also update the API endpoints like `/apps/invoice` in below example.
- * ! Also, remove the above server action import and the action itself from the `src/app/server/actions.ts` file to clean up unused code
- * ! because we've used the server action for getting our static data.
- */
-/* const getInvoiceData = async () => {
-  const res = await fetch(`${process.env.API_URL}/apps/invoice`)
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch invoice data')
-  }
-
-  return res.json()
-} */
-const OverViewTab = async () => {
-  // Vars
-  const invoiceData = await getInvoiceData()
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!id) return
+            try {
+                const { ok, result } = await getCoinHistory({ id, limit: 100 })
+                if (ok && result.success) {
+                    setData(result.data.docs || []) // Assuming pagination structure
+                }
+            } catch (error) {
+                console.error(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
+    }, [id])
 
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
-        <ProjectListTable />
-      </Grid>
-      <Grid size={{ xs: 12 }}>
-        <UserActivityTimeLine />
-      </Grid>
-      <Grid size={{ xs: 12 }}>
-        <InvoiceListTable invoiceData={invoiceData} />
+        <Card>
+            <CardHeader title='Coin History' />
+            <div className='overflow-x-auto'>
+                {loading ? (
+                    <div className='text-center p-10'>
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Amount</TableCell>
+                                <TableCell>Type</TableCell>
+                                <TableCell>Description</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data.length > 0 ? (
+                                data.map((row, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
+                                        <TableCell>{row.coins}</TableCell>
+                                        <TableCell className='capitalize'>{row.type}</TableCell>
+                                        <TableCell>{row.description}</TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} align='center'>
+                                        <Typography>No history found</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                )}
+            </div>
+        </Card>
       </Grid>
     </Grid>
   )

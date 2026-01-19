@@ -14,7 +14,7 @@ import CustomTabList from '@core/components/mui/TabList'
 
 const UserRight = ({ tabContentList }) => {
   // States
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('coin-history')
 
   const handleChange = (event, value) => {
     setActiveTab(value)
@@ -26,21 +26,9 @@ const UserRight = ({ tabContentList }) => {
         <Grid container spacing={6}>
           <Grid size={{ xs: 12 }}>
             <CustomTabList onChange={handleChange} variant='scrollable' pill='true'>
-              <Tab icon={<i className='tabler-users' />} value='overview' label='Overview' iconPosition='start' />
-              <Tab icon={<i className='tabler-lock' />} value='security' label='Security' iconPosition='start' />
-              <Tab
-                icon={<i className='tabler-bookmark' />}
-                value='billing-plans'
-                label='Billing & Plans'
-                iconPosition='start'
-              />
-              <Tab
-                icon={<i className='tabler-bell' />}
-                value='notifications'
-                label='Notifications'
-                iconPosition='start'
-              />
-              <Tab icon={<i className='tabler-link' />} value='connections' label='Connections' iconPosition='start' />
+              <Tab icon={<i className='tabler-coin' />} value='coin-history' label='Coin History' iconPosition='start' />
+              <Tab icon={<i className='tabler-file-analytics' />} value='coin-plan-history' label='Coin Plan History' iconPosition='start' />
+              <Tab icon={<i className='tabler-crown' />} value='vip-plan-history' label='VIP Plan History' iconPosition='start' />
             </CustomTabList>
           </Grid>
           <Grid size={{ xs: 12 }}>
