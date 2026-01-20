@@ -79,7 +79,7 @@ const AboutOverview = () => {
               ) : (
                   <Typography>Loading...</Typography>
               )}
-            </div>
+            </div>  
           </CardContent>
         </Card>
       </Grid>
