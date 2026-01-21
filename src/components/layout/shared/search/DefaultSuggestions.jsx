@@ -51,6 +51,11 @@ const defaultSuggestions = [
         label: 'VIP Plan',
         href: '/apps/vip-plan/list',
         icon: 'tabler-crown'
+      },
+      {
+        label: 'Reward',
+        href: '/apps/reward',
+        icon: 'tabler-gift'
       }
     ]
   }

@@ -153,7 +153,7 @@ export const createStory = async (formData) => {
 export const updateStory = async (id, formData) => {
     const token = localStorage.getItem('token')
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/story/update?id=${id}`, {
-        method: 'PATCH',
+        method: 'PUt',
         headers: {
             'Authorization': `Bearer ${token}`
         },
@@ -327,6 +327,84 @@ export const updateLanguage = async (id, data) => {
 
 export const deleteLanguage = async (id) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/language/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+// Ad Reward API Services
+
+export const getAdRewards = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/ad-reward/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createAdReward = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/ad-reward/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateAdReward = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/ad-reward/update/${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteAdReward = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/ad-reward/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+// Daily Reward API Services
+export const getDailyRewards = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/daily-reward/all`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createDailyReward = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/daily-reward/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateDailyReward = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/daily-reward/update/${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteDailyReward = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/daily-reward/delete/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     })

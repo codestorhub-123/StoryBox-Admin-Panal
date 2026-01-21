@@ -6,12 +6,14 @@ import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import { signOut } from 'next-auth/react'
 
 // Component Imports
 import { Menu, SubMenu, MenuItem, MenuSection } from '@menu/vertical-menu'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
+import { getLocalizedUrl } from '@/utils/i18n'
 
 // Styled Component Imports
 import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNavExpandIcon'
@@ -36,6 +38,20 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
   const { isBreakpointReached, transitionDuration } = verticalNavOptions
   const { lang: locale } = params
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem('token')
+      localStorage.removeItem('admin')
+      localStorage.removeItem('userData')
+
+      await signOut({ redirect: false })
+
+      window.location.href = getLocalizedUrl('/login', locale || 'en')
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <ScrollWrapper
@@ -86,8 +102,14 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
            <MenuItem href={`/${locale}/apps/language/list`} icon={<i className='tabler-language' />}>
              Language
           </MenuItem>
+          <MenuItem href={`/${locale}/apps/reward`} icon={<i className='tabler-gift' />}>
+             Reward
+          </MenuItem>
            <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>
              Profile
+          </MenuItem>
+          <MenuItem icon={<i className='tabler-logout' />} onClick={handleLogout}>
+             Logout
           </MenuItem>
         </MenuSection>
 
