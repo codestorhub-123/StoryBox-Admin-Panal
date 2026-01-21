@@ -16,11 +16,12 @@ import TableBody from '@mui/material/TableBody'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import TablePagination from '@mui/material/TablePagination'
+import Chip from '@mui/material/Chip'
 
 // Service Imports
-import { getCoinHistory } from '@/services/ApiService'
+import { getUserCoinPlanHistory } from '@/services/ApiService'
 
-const OverViewTab = () => {
+const CoinPlanHistory = () => {
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
     const [data, setData] = useState([])
@@ -34,7 +35,7 @@ const OverViewTab = () => {
             if (!id) return
             setLoading(true)
             try {
-                const { ok, result } = await getCoinHistory({ 
+                const { ok, result } = await getUserCoinPlanHistory({ 
                     id, 
                     page: page + 1, 
                     limit: rowsPerPage 
@@ -65,7 +66,7 @@ const OverViewTab = () => {
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
         <Card>
-            <CardHeader title='Coin History' />
+            <CardHeader title='Coin Plan History' />
             <div className='overflow-x-auto'>
                 {loading ? (
                     <div className='text-center p-10'>
@@ -77,9 +78,10 @@ const OverViewTab = () => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Date</TableCell>
+                                    <TableCell>Plan Name</TableCell>
                                     <TableCell>Amount</TableCell>
-                                    <TableCell>Type</TableCell>
-                                    <TableCell>Description</TableCell>
+                                    <TableCell>Coins</TableCell>
+                                    <TableCell>Status</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -87,14 +89,23 @@ const OverViewTab = () => {
                                     data.map((row, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
-                                            <TableCell>{row.coins}</TableCell>
-                                            <TableCell className='capitalize'>{row.type}</TableCell>
-                                            <TableCell>{row.description}</TableCell>
+                                            <TableCell>{row.planName || row.planId?.name || '-'}</TableCell>
+                                            <TableCell>{row.price || row.planId?.price || '0'}</TableCell>
+                                            <TableCell>{row.coins || row.planId?.coins || '0'}</TableCell>
+                                            <TableCell>
+                                                <Chip 
+                                                    label={row.status || 'Success'} 
+                                                    color={row.status === 'failed' ? 'error' : 'success'} 
+                                                    size='small' 
+                                                    variant='tonal'
+                                                    className='capitalize'
+                                                />
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={4} align='center'>
+                                        <TableCell colSpan={5} align='center'>
                                             <Typography>No history found</Typography>
                                         </TableCell>
                                     </TableRow>
@@ -118,4 +129,4 @@ const OverViewTab = () => {
   )
 }
 
-export default OverViewTab
+export default CoinPlanHistory

@@ -12,6 +12,8 @@ import UserRight from '@views/apps/user/view/user-right'
 import { getPricingData } from '@/app/server/actions'
 
 const OverViewTab = dynamic(() => import('@views/apps/user/view/user-right/overview'))
+const CoinPlanHistory = dynamic(() => import('@views/apps/user/view/user-right/overview/CoinPlanHistory'))
+const VipPlanHistory = dynamic(() => import('@views/apps/user/view/user-right/overview/VipPlanHistory'))
 const SecurityTab = dynamic(() => import('@views/apps/user/view/user-right/security'))
 const BillingPlans = dynamic(() => import('@views/apps/user/view/user-right/billing-plans'))
 const NotificationsTab = dynamic(() => import('@views/apps/user/view/user-right/notifications'))
@@ -20,8 +22,8 @@ const ConnectionsTab = dynamic(() => import('@views/apps/user/view/user-right/co
 // Vars
 const tabContentList = data => ({
   'coin-history': <OverViewTab />,
-  'coin-plan-history': <div>Coin Plan History Content</div>,
-  'vip-plan-history': <div>VIP Plan History Content</div>
+  'coin-plan-history': <CoinPlanHistory />,
+  'vip-plan-history': <VipPlanHistory />
 })
 
 /**

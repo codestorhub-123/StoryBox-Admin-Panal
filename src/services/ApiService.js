@@ -64,6 +64,24 @@ export const getCoinHistory = async (params) => {
     return { ok: res.ok, result }
 }
 
+export const getUserCoinPlanHistory = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/get-coin-plan-history?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const getUserVipPlanHistory = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/get-vip-plan-history?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
 export const updateUserName = async (id, name) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/user/update-name?id=${id}`, {
         method: 'PATCH',
