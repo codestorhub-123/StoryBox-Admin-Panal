@@ -38,6 +38,11 @@ const defaultSuggestions = [
         icon: 'tabler-video'
       },
       {
+        label: 'Language',
+        href: '/apps/language/list',
+        icon: 'tabler-language'
+      },
+      {
         label: 'Coin Plan',
         href: '/apps/coin-plan/list',
         icon: 'tabler-coin'

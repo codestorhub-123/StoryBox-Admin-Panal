@@ -295,3 +295,41 @@ export const deleteVipPlan = async (id) => {
     return { ok: res.ok, result }
 }
 
+// Language API Services
+export const getLanguages = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/language/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createLanguage = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/language/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateLanguage = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/language/update/${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteLanguage = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/language/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}

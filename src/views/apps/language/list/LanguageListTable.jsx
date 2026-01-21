@@ -26,17 +26,17 @@ import { toast } from 'react-toastify'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import TablePaginationComponent from '@components/TablePaginationComponent'
-import VipPlanDialog from '@/components/dialogs/VipPlanDialog'
+import LanguageDialog from '@/components/dialogs/LanguageDialog'
 
 // Service Imports
-import { getVipPlans, createVipPlan, updateVipPlan, deleteVipPlan } from '@/services/ApiService'
+import { getLanguages, createLanguage, updateLanguage, deleteLanguage } from '@/services/ApiService'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 
 const columnHelper = createColumnHelper()
 
-const VipPlanListTable = () => {
+const LanguageListTable = () => {
   // States
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -46,12 +46,12 @@ const VipPlanListTable = () => {
   })
   const [rowCount, setRowCount] = useState(0)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingPlan, setEditingPlan] = useState(null)
+  const [editingLanguage, setEditingLanguage] = useState(null)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const { ok, result } = await getVipPlans({
+      const { ok, result } = await getLanguages({
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
       })
@@ -60,10 +60,10 @@ const VipPlanListTable = () => {
         setData(result.data.docs)
         setRowCount(result.data.totalDocs)
       } else {
-        toast.error(result.message || 'Failed to fetch VIP plans')
+        toast.error(result.message || 'Failed to fetch languages')
       }
     } catch (error) {
-      toast.error('Error fetching VIP plans')
+      toast.error('Error fetching languages')
     } finally {
       setLoading(false)
     }
@@ -74,12 +74,12 @@ const VipPlanListTable = () => {
   }, [pagination.pageIndex, pagination.pageSize])
 
   const handleAddClick = () => {
-    setEditingPlan(null)
+    setEditingLanguage(null)
     setDialogOpen(true)
   }
 
-  const handleEditClick = (plan) => {
-    setEditingPlan(plan)
+  const handleEditClick = (language) => {
+    setEditingLanguage(language)
     setDialogOpen(true)
   }
 
@@ -87,20 +87,20 @@ const VipPlanListTable = () => {
     try {
       let res;
       if (id) {
-        res = await updateVipPlan(id, formData)
+        res = await updateLanguage(id, formData)
       } else {
-        res = await createVipPlan(formData)
+        res = await createLanguage(formData)
       }
 
       if (res.ok && res.result.success) {
-        toast.success(id ? 'Plan updated successfully' : 'Plan created successfully')
+        toast.success(id ? 'Language updated successfully' : 'Language created successfully')
         setDialogOpen(false)
         fetchData()
       } else {
-        toast.error(res.result.message || 'Failed to save plan')
+        toast.error(res.result.message || 'Failed to save language')
       }
     } catch (error) {
-      toast.error('Error saving plan')
+      toast.error('Error saving language')
     }
   }
 
@@ -109,7 +109,7 @@ const VipPlanListTable = () => {
         ({ closeToast }) => (
             <div className='flex flex-col gap-4'>
                 <Typography variant='body1' className='font-medium'>
-                    Are you sure you want to delete this plan?
+                    Are you sure you want to delete this language?
                 </Typography>
                 <div className='flex gap-2 justify-end'>
                      <Button 
@@ -119,15 +119,15 @@ const VipPlanListTable = () => {
                         onClick={async () => {
                             closeToast()
                             try {
-                                const { ok, result } = await deleteVipPlan(id)
+                                const { ok, result } = await deleteLanguage(id)
                                 if(ok && result.success) {
-                                    toast.success('Plan deleted successfully')
+                                    toast.success('Language deleted successfully')
                                     fetchData()
                                 } else {
-                                    toast.error(result.message || 'Failed to delete plan')
+                                    toast.error(result.message || 'Failed to delete language')
                                 }
                             } catch (error) {
-                                toast.error('Error deleting plan')
+                                toast.error('Error deleting language')
                             }
                         }}
                     >
@@ -145,7 +145,7 @@ const VipPlanListTable = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
       try {
-          const { ok, result } = await updateVipPlan(id, { isActive: !currentStatus })
+          const { ok, result } = await updateLanguage(id, { isActive: !currentStatus })
           if(ok && result.success) {
               toast.success('Status updated')
               setData(prev => prev.map(item => item._id === id ? { ...item, isActive: !currentStatus } : item))
@@ -166,32 +166,12 @@ const VipPlanListTable = () => {
         )
       }),
       columnHelper.accessor('name', {
-        header: 'Plan Name',
+        header: 'Language Name',
         cell: ({ row }) => (
           <Typography color='text.primary' className='font-medium'>
             {row.original.name}
           </Typography>
         )
-      }),
-      columnHelper.accessor('validity', {
-          header: 'Validity',
-          cell: ({ row }) => (
-              <Typography className='capitalize'>
-                  {row.original.validity} {row.original.validityType}{row.original.validity > 1 ? 's' : ''}
-              </Typography>
-          )
-      }),
-      columnHelper.accessor('price', {
-        header: 'Price',
-        cell: ({ row }) => <Typography>₹{row.original.price}</Typography>
-      }),
-      columnHelper.accessor('offerPrice', {
-        header: 'Offer Price',
-        cell: ({ row }) => <Typography color='primary'>₹{row.original.offerPrice}</Typography>
-      }),
-      columnHelper.accessor('tags', {
-        header: 'Tags',
-        cell: ({ row }) => <Typography>{row.original.tags || '-'}</Typography>
       }),
       columnHelper.accessor('isActive', {
         header: 'Active',
@@ -235,10 +215,10 @@ const VipPlanListTable = () => {
   return (
     <Card>
       <CardHeader 
-        title='VIP Plans' 
+        title='Languages' 
         action={
           <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={handleAddClick}>
-            Add New Plan
+            Add Language
           </Button>
         }
       />
@@ -301,14 +281,14 @@ const VipPlanListTable = () => {
           table.setPageIndex(page)
         }}
       />
-      <VipPlanDialog 
+      <LanguageDialog 
         open={dialogOpen} 
         setOpen={setDialogOpen} 
-        plan={editingPlan} 
+        language={editingLanguage} 
         handleSave={handleSave} 
       />
     </Card>
   )
 }
 
-export default VipPlanListTable
+export default LanguageListTable

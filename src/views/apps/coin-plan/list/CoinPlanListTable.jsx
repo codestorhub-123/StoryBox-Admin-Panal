@@ -106,20 +106,43 @@ const CoinPlanListTable = () => {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this plan?')) return
-
-    try {
-      const { ok, result } = await deleteCoinPlan(id)
-      if (ok && result.success) {
-        toast.success('Plan deleted successfully')
-        fetchData()
-      } else {
-        toast.error(result.message || 'Failed to delete plan')
-      }
-    } catch (error) {
-      toast.error('Error deleting plan')
-    }
+  const handleDelete = (id) => {
+    toast(
+        ({ closeToast }) => (
+            <div className='flex flex-col gap-4'>
+                <Typography variant='body1' className='font-medium'>
+                    Are you sure you want to delete this plan?
+                </Typography>
+                <div className='flex gap-2 justify-end'>
+                     <Button 
+                        variant='contained' 
+                        color='error' 
+                        size='small'
+                        onClick={async () => {
+                            closeToast()
+                            try {
+                                const { ok, result } = await deleteCoinPlan(id)
+                                if(ok && result.success) {
+                                    toast.success('Plan deleted successfully')
+                                    fetchData()
+                                } else {
+                                    toast.error(result.message || 'Failed to delete plan')
+                                }
+                            } catch (error) {
+                                toast.error('Error deleting plan')
+                            }
+                        }}
+                    >
+                        Yes, Delete
+                    </Button>
+                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+                        Cancel
+                    </Button>
+                </div>
+            </div>
+        ),
+        { position: 'top-center', autoClose: false, closeButton: false }
+    )
   }
 
   const handleToggleStatus = async (id, currentStatus) => {

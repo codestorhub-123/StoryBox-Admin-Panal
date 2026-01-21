@@ -72,7 +72,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuItem href={`/${locale}/apps/episode/list`} icon={<i className='tabler-video' />}>
              Episode List
           </MenuItem>
-          
+         
         </MenuSection>
           <MenuSection label='Package'>
              <MenuItem href={`/${locale}/apps/coin-plan/list`} icon={<i className='tabler-coin' />}>
@@ -83,6 +83,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
             </MenuItem>
           </MenuSection>
         <MenuSection label='OTHERS'>
+           <MenuItem href={`/${locale}/apps/language/list`} icon={<i className='tabler-language' />}>
+             Language
+          </MenuItem>
            <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>
              Profile
           </MenuItem>

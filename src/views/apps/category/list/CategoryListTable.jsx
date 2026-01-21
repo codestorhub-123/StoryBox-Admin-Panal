@@ -153,28 +153,15 @@ const CategoryListTable = () => {
                             }
                         }}
                     >
-                        Yes
+                        Yes, Delete
                     </Button>
-                    <Button 
-                        variant='outlined' 
-                        color='secondary' 
-                        size='small'
-                        onClick={closeToast}
-                    >
-                        No
+                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+                        Cancel
                     </Button>
                 </div>
             </div>
         ),
-        {
-            position: 'top-center',
-            autoClose: false,
-            closeOnClick: false,
-            draggable: false,
-            closeButton: false,
-            icon: '👋',
-           
-        }
+        { position: 'top-center', autoClose: false, closeButton: false }
     )
   }
 

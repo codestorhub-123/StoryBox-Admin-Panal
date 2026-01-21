@@ -204,11 +204,11 @@ const GlobalEpisodeListTable = () => {
   const handleDelete = (id) => {
     toast(
       ({ closeToast }) => (
-        <div className='flex flex-col gap-4 text-center p-2'>
+        <div className='flex flex-col gap-4'>
           <Typography variant='body1' className='font-medium'>
             Are you sure you want to delete this episode?
           </Typography>
-          <div className='flex gap-2 justify-center'>
+          <div className='flex gap-2 justify-end'>
             <Button 
                 variant='contained' 
                 color='error' 
@@ -228,9 +228,11 @@ const GlobalEpisodeListTable = () => {
                     }
                 }}
             >
-                Yes
+                Yes, Delete
             </Button>
-            <Button variant='outlined' color='secondary' size='small' onClick={closeToast}>No</Button>
+            <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+                Cancel
+            </Button>
           </div>
         </div>
       ),

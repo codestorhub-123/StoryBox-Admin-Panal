@@ -238,27 +238,15 @@ const StoryListTable = () => {
                             }
                         }}
                     >
-                        Yes
+                        Yes, Delete
                     </Button>
-                    <Button 
-                        variant='outlined' 
-                        color='secondary' 
-                        size='small'
-                        onClick={closeToast}
-                    >
-                        No
+                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+                        Cancel
                     </Button>
                 </div>
             </div>
         ),
-        {
-            position: 'top-center',
-            autoClose: false,
-            closeOnClick: false,
-            draggable: false,
-            closeButton: false,
-            icon: '👋'
-        }
+        { position: 'top-center', autoClose: false, closeButton: false }
     )
   }
 
@@ -389,21 +377,44 @@ const StoryListTable = () => {
       setAddEpisodeOpen(true)
   }
 
-  const handleDeleteEpisode = async (id) => {
-      if(window.confirm('Are you sure you want to delete this episode?')) {
-          try {
-              const { ok, result } = await deleteEpisode(id)
-              if(ok && result.success) {
-                  toast.success('Episode deleted')
-                  const storyRes = await getStoryDetail(selectedStoryId)
-                  if(storyRes.ok && storyRes.result.success) {
-                      setEpisodes(storyRes.result.data.episodes || [])
-                  }
-              }
-          } catch (err) {
-              toast.error('Delete failed')
-          }
-      }
+  const handleDeleteEpisode = (id) => {
+    toast(
+        ({ closeToast }) => (
+            <div className='flex flex-col gap-4'>
+                <Typography variant='body1' className='font-medium'>
+                    Are you sure you want to delete this episode?
+                </Typography>
+                <div className='flex gap-2 justify-end'>
+                     <Button 
+                        variant='contained' 
+                        color='error' 
+                        size='small'
+                        onClick={async () => {
+                            closeToast()
+                            try {
+                                const { ok, result } = await deleteEpisode(id)
+                                if(ok && result.success) {
+                                    toast.success('Episode deleted')
+                                    const storyRes = await getStoryDetail(selectedStoryId)
+                                    if(storyRes.ok && storyRes.result.success) {
+                                        setEpisodes(storyRes.result.data.episodes || [])
+                                    }
+                                }
+                            } catch (err) {
+                                toast.error('Delete failed')
+                            }
+                        }}
+                    >
+                        Yes, Delete
+                    </Button>
+                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+                        Cancel
+                    </Button>
+                </div>
+            </div>
+        ),
+        { position: 'top-center', autoClose: false, closeButton: false }
+    )
   }
 
   const handleEpisodeFileChange = async (e, field) => {
