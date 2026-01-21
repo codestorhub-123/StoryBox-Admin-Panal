@@ -222,9 +222,6 @@ const UserListTable = () => {
             <IconButton component={Link} href={`/${locale}/apps/user/view?id=${row.original._id}`}>
               <i className='tabler-eye text-textSecondary' />
             </IconButton>
-             <IconButton>
-              <i className='tabler-history text-textSecondary' />
-            </IconButton>
           </div>
         ),
         enableSorting: false

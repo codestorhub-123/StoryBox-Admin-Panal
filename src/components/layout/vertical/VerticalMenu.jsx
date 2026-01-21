@@ -78,6 +78,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
              <MenuItem href={`/${locale}/apps/coin-plan/list`} icon={<i className='tabler-coin' />}>
                Coin Plan
             </MenuItem>
+             <MenuItem href={`/${locale}/apps/vip-plan/list`} icon={<i className='tabler-crown' />}>
+               VIP Plan
+            </MenuItem>
           </MenuSection>
         <MenuSection label='OTHERS'>
            <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>

@@ -111,7 +111,7 @@ export const updateCategory = async (id, formData) => {
 }
 
 export const deleteCategory = async (id) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/category/delete?id=${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/category/delete/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     })
@@ -164,7 +164,7 @@ export const updateStory = async (id, formData) => {
 }
 
 export const deleteStory = async (id) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/story/delete?id=${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/story/delete/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     })
@@ -209,7 +209,7 @@ export const updateEpisode = async (id, formData) => {
 }
 
 export const deleteEpisode = async (id) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/episode/delete?id=${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/episode/delete/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     })
@@ -248,7 +248,46 @@ export const updateCoinPlan = async (id, data) => {
 }
 
 export const deleteCoinPlan = async (id) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/delete?id=${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+// VIP Plan API Services
+export const getVipPlans = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/vip-plan/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createVipPlan = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/vip-plan/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateVipPlan = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/vip-plan/update?id=${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteVipPlan = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/vip-plan/delete/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
     })

@@ -41,6 +41,11 @@ const defaultSuggestions = [
         label: 'Coin Plan',
         href: '/apps/coin-plan/list',
         icon: 'tabler-coin'
+      },
+      {
+        label: 'VIP Plan',
+        href: '/apps/vip-plan/list',
+        icon: 'tabler-crown'
       }
     ]
   }
