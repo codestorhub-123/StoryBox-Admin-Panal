@@ -216,3 +216,43 @@ export const deleteEpisode = async (id) => {
     const result = await res.json()
     return { ok: res.ok, result }
 }
+
+// Coin Plan API Services
+export const getCoinPlans = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createCoinPlan = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateCoinPlan = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/update?id=${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteCoinPlan = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/coin-plan/delete?id=${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+

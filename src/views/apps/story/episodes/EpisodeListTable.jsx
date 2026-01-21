@@ -473,8 +473,7 @@ const EpisodeListTable = () => {
   return (
     <Card>
       <CardHeader 
-        title={story ? `Episodes: ${story.title}` : 'Episodes'} 
-        subheader={story ? `Manage episodes for ${story.title}` : ''}
+        title={'Episodes'} 
         action={
             <Button variant='contained' onClick={handleOpen} startIcon={<i className='tabler-plus' />}>
                 Add Episode

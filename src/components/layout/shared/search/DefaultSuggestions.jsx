@@ -36,6 +36,11 @@ const defaultSuggestions = [
         label: 'Episode List',
         href: '/apps/episode/list',
         icon: 'tabler-video'
+      },
+      {
+        label: 'Coin Plan',
+        href: '/apps/coin-plan/list',
+        icon: 'tabler-coin'
       }
     ]
   }
