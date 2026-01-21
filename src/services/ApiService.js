@@ -153,7 +153,7 @@ export const createStory = async (formData) => {
 export const updateStory = async (id, formData) => {
     const token = localStorage.getItem('token')
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/story/update?id=${id}`, {
-        method: 'PUt',
+        method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`
         },
