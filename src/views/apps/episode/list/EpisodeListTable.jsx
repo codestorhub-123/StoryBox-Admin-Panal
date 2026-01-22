@@ -74,13 +74,19 @@ const VideoThumbnail = ({ videoUrl, thumbnailUrl, getImageUrl, onClick }) => {
         }
     }, [videoUrl, thumbnailUrl, getImageUrl])
 
-    if (loading) return <div className='w-[50px] h-[50px] bg-actionSelected animate-pulse rounded flex items-center justify-center'><CircularProgress size={16} /></div>
+    if (loading) return <div className='w-[100px] h-[140px] bg-actionSelected animate-pulse rounded-lg flex items-center justify-center'><CircularProgress size={24} /></div>
     
     return (
-        <div className='relative group cursor-pointer' onClick={onClick}>
-            <CustomAvatar src={thumb || '/images/avatars/1.png'} size={50} variant='rounded' />
-            <div className='absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded'>
-                <i className='tabler-player-play-filled text-white text-xs' />
+        <div className='relative group cursor-pointer w-[100px] h-[140px] overflow-hidden rounded-xl shadow-md ' onClick={onClick}>
+            <img 
+                src={thumb || '/images/avatars/1.png'} 
+                alt='thumbnail'
+                className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
+            />
+            <div className='absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity'>
+                <div className='w-8 h-8 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center'>
+                    <i className='tabler-eye text-white text-xs' />
+                </div>
             </div>
         </div>
     )
@@ -404,20 +410,20 @@ const handleFileChange = async (e, field) => {
         header: 'Video',
         cell: ({ row }) => (
             <div 
-                className='w-[120px] h-[68px] relative rounded-lg overflow-hidden cursor-pointer shadow-sm border-2 border-transparent hover:border-primary transition-all group bg-black flex items-center justify-center'
+                className='w-[100px] h-[140px] relative rounded-xl overflow-hidden cursor-pointer shadow-lg transition-all group bg-black flex items-center justify-center'
                 onClick={() => handlePlayVideo(row.original.videoUrl)}
             >
                 <video 
                     src={getImageUrl(row.original.videoUrl)} 
-                    className='w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity'
+                    className='w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity'
                     muted
                     loop
                     onMouseOver={e => e.target.play()}
                     onMouseOut={e => { e.target.pause(); e.target.currentTime = 0; }}
                 />
-                <div className='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-transparent transition-all'>
-                     <div className='w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform'>
-                        <i className='tabler-player-play-filled text-white text-xs' />
+                <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
+                     <div className='w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform'>
+                        <i className='tabler-player-play-filled text-error text-lg' />
                      </div>
                 </div>
             </div>
@@ -426,9 +432,9 @@ const handleFileChange = async (e, field) => {
       columnHelper.accessor('name', {
         header: 'Episode Name',
         cell: ({ row }) => (
-          <div className='flex flex-col'>
-            <Typography color='text.primary' className='font-medium'>{row.original.name || 'No Name'}</Typography>
-            <Typography variant='caption' className='text-xs'>{row.original.type?.toUpperCase()}</Typography>
+          <div className='flex flex-col max-is-[200px]'>
+            <Typography color='text.primary' className='font-bold text-base line-clamp-2'>{row.original.name || 'No Name'}</Typography>
+            <Typography variant='caption' className='text-xs font-medium text-textSecondary'>{row.original.type?.toUpperCase()}</Typography>
           </div>
         )
       }),

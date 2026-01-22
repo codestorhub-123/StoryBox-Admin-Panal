@@ -429,3 +429,57 @@ export const deleteDailyReward = async (id) => {
     const result = await res.json()
     return { ok: res.ok, result }
 }
+
+// Content API Services (Manage general content like Media, Public Relations, etc.)
+export const getContentList = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/content/all`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createContent = async (formData) => {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/content/store`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateContent = async (id, formData) => {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/content/update?id=${id}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteContent = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/content/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+// Order History API Services
+export const getOrderHistory = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/order/history?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}

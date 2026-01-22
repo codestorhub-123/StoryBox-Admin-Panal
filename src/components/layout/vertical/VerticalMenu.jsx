@@ -88,6 +88,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
           <MenuItem href={`/${locale}/apps/episode/list`} icon={<i className='tabler-video' />}>
              Episode List
           </MenuItem>
+          <MenuItem href={`/${locale}/apps/content`} icon={<i className='tabler-file-text' />}>
+             Content 
+          </MenuItem>
          
         </MenuSection>
           <MenuSection label='Package'>
@@ -97,11 +100,15 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
              <MenuItem href={`/${locale}/apps/vip-plan/list`} icon={<i className='tabler-crown' />}>
                VIP Plan
             </MenuItem>
+            <MenuItem href={`/${locale}/apps/order/history`} icon={<i className='tabler-file-invoice' />}>
+               Order History
+            </MenuItem>
           </MenuSection>
         <MenuSection label='OTHERS'>
            <MenuItem href={`/${locale}/apps/language/list`} icon={<i className='tabler-language' />}>
              Language
           </MenuItem>
+        
           <MenuItem href={`/${locale}/apps/reward`} icon={<i className='tabler-gift' />}>
              Reward
           </MenuItem>
