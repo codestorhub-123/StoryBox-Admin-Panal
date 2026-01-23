@@ -225,6 +225,7 @@ const CoinPlanListTable = () => {
   const table = useReactTable({
     data,
     columns,
+    rowCount, // ✅ Added rowCount for TablePaginationComponent
     state: {
       pagination,
     },

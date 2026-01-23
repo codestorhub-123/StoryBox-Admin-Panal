@@ -505,3 +505,61 @@ export const updateSettings = async (data) => {
     const result = await res.json()
     return { ok: res.ok, result }
 }
+
+// Report Reason API Services
+export const getReportReasons = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report-reason/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const createReportReason = async (data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report-reason/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateReportReason = async (id, data) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report-reason/update?id=${id}`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteReportReason = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report-reason/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+// User Reports API Services
+export const getReports = async (params) => {
+    const queryString = new URLSearchParams(params).toString()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report/all?${queryString}`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const deleteReport = async (id) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/report/delete/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}

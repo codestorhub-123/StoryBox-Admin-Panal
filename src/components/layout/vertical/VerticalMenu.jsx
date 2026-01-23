@@ -57,13 +57,13 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
     <ScrollWrapper
       {...(isBreakpointReached
         ? {
-            className: 'bs-full overflow-y-auto overflow-x-hidden',
-            onScroll: container => scrollMenu(container, false)
-          }
+          className: 'bs-full overflow-y-auto overflow-x-hidden',
+          onScroll: container => scrollMenu(container, false)
+        }
         : {
-            options: { wheelPropagation: false, suppressScrollX: true },
-            onScrollY: container => scrollMenu(container, true)
-          })}
+          options: { wheelPropagation: false, suppressScrollX: true },
+          onScrollY: container => scrollMenu(container, true)
+        })}
     >
       <Menu
         popoutMenuOffset={{ mainAxis: 23 }}
@@ -80,46 +80,52 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         </MenuItem>
         <MenuSection label='FILM MANAGEMENT'>
           <MenuItem href={`/${locale}/apps/category/list`} icon={<i className='tabler-category' />}>
-             Film Category
+            Film Category
           </MenuItem>
           <MenuItem href={`/${locale}/apps/story/list`} icon={<i className='tabler-movie' />}>
-             Film List
+            Film List
           </MenuItem>
           <MenuItem href={`/${locale}/apps/episode/list`} icon={<i className='tabler-video' />}>
-             Episode List
+            Episode List
           </MenuItem>
           <MenuItem href={`/${locale}/apps/content`} icon={<i className='tabler-file-text' />}>
-             Content 
+            Content
           </MenuItem>
-         
+
         </MenuSection>
-          <MenuSection label='Package'>
-             <MenuItem href={`/${locale}/apps/coin-plan/list`} icon={<i className='tabler-coin' />}>
-               Coin Plan
-            </MenuItem>
-             <MenuItem href={`/${locale}/apps/vip-plan/list`} icon={<i className='tabler-crown' />}>
-               VIP Plan
-            </MenuItem>
-            <MenuItem href={`/${locale}/apps/order/history`} icon={<i className='tabler-file-invoice' />}>
-               Order History
-            </MenuItem>
-          </MenuSection>
-        <MenuSection label='OTHERS'>
-           <MenuItem href={`/${locale}/apps/language/list`} icon={<i className='tabler-language' />}>
-             Language
+        <MenuSection label='Package'>
+          <MenuItem href={`/${locale}/apps/coin-plan/list`} icon={<i className='tabler-coin' />}>
+            Coin Plan
           </MenuItem>
-        
+          <MenuItem href={`/${locale}/apps/vip-plan/list`} icon={<i className='tabler-crown' />}>
+            VIP Plan
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/order/history`} icon={<i className='tabler-file-invoice' />}>
+            Order History
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/report-reason/list`} icon={<i className='tabler-list' />}>
+            Report Reasons
+          </MenuItem>
+          <MenuItem href={`/${locale}/apps/report/list`} icon={<i className='tabler-flag' />}>
+            User Reports
+          </MenuItem>
+        </MenuSection>
+        <MenuSection label='OTHERS'>
+          <MenuItem href={`/${locale}/apps/language/list`} icon={<i className='tabler-language' />}>
+            Language
+          </MenuItem>
+
           <MenuItem href={`/${locale}/apps/setting`} icon={<i className='tabler-settings' />}>
-             Settings
+            Settings
           </MenuItem>
           <MenuItem href={`/${locale}/apps/reward`} icon={<i className='tabler-gift' />}>
-             Reward
+            Reward
           </MenuItem>
-           <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>
-             Profile
+          <MenuItem href={`/${locale}/pages/user-profile`} icon={<i className='tabler-user-circle' />}>
+            Profile
           </MenuItem>
           <MenuItem icon={<i className='tabler-logout' />} onClick={handleLogout}>
-             Logout
+            Logout
           </MenuItem>
         </MenuSection>
 

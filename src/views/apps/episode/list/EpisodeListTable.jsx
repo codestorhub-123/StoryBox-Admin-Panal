@@ -44,52 +44,52 @@ import tableStyles from '@core/styles/table.module.css'
 const columnHelper = createColumnHelper()
 
 const VideoThumbnail = ({ videoUrl, thumbnailUrl, getImageUrl, onClick }) => {
-    const [thumb, setThumb] = useState(thumbnailUrl ? getImageUrl(thumbnailUrl) : '')
-    const [loading, setLoading] = useState(false)
+  const [thumb, setThumb] = useState(thumbnailUrl ? getImageUrl(thumbnailUrl) : '')
+  const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        if (!thumbnailUrl && videoUrl) {
-            setLoading(true)
-            const video = document.createElement('video')
-            video.src = getImageUrl(videoUrl)
-            video.crossOrigin = 'anonymous'
-            video.currentTime = 1 
-            
-            video.onloadeddata = () => {
-                const canvas = document.createElement('canvas')
-                canvas.width = 120
-                canvas.height = 160
-                const ctx = canvas.getContext('2d')
-                
-                setTimeout(() => {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-                    setThumb(canvas.toDataURL('image/jpeg'))
-                    setLoading(false)
-                }, 500)
-            }
+  useEffect(() => {
+    if (!thumbnailUrl && videoUrl) {
+      setLoading(true)
+      const video = document.createElement('video')
+      video.src = getImageUrl(videoUrl)
+      video.crossOrigin = 'anonymous'
+      video.currentTime = 1
 
-            video.onerror = () => {
-                setLoading(false)
-            }
-        }
-    }, [videoUrl, thumbnailUrl, getImageUrl])
+      video.onloadeddata = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 120
+        canvas.height = 160
+        const ctx = canvas.getContext('2d')
 
-    if (loading) return <div className='w-[100px] h-[140px] bg-actionSelected animate-pulse rounded-lg flex items-center justify-center'><CircularProgress size={24} /></div>
-    
-    return (
-        <div className='relative group cursor-pointer w-[100px] h-[140px] overflow-hidden rounded-xl shadow-md ' onClick={onClick}>
-            <img 
-                src={thumb || '/images/avatars/1.png'} 
-                alt='thumbnail'
-                className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
-            />
-            <div className='absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity'>
-                <div className='w-8 h-8 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center'>
-                    <i className='tabler-eye text-white text-xs' />
-                </div>
-            </div>
+        setTimeout(() => {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+          setThumb(canvas.toDataURL('image/jpeg'))
+          setLoading(false)
+        }, 500)
+      }
+
+      video.onerror = () => {
+        setLoading(false)
+      }
+    }
+  }, [videoUrl, thumbnailUrl, getImageUrl])
+
+  if (loading) return <div className='w-[100px] h-[140px] bg-actionSelected animate-pulse rounded-lg flex items-center justify-center'><CircularProgress size={24} /></div>
+
+  return (
+    <div className='relative group cursor-pointer w-[100px] h-[140px] overflow-hidden rounded-xl shadow-md ' onClick={onClick}>
+      <img
+        src={thumb || '/images/avatars/1.png'}
+        alt='thumbnail'
+        className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
+      />
+      <div className='absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity'>
+        <div className='w-8 h-8 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center'>
+          <i className='tabler-eye text-white text-xs' />
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 const GlobalEpisodeListTable = () => {
@@ -113,17 +113,17 @@ const GlobalEpisodeListTable = () => {
   const [editMode, setEditMode] = useState(false)
   const [currentEpisode, setCurrentEpisode] = useState(null)
   const [formData, setFormData] = useState({
-      storyId: '',
-      episodeNumber: '',
-      name: '',
-      description: '',
-      isFree: true,
-      type: 'episode',
-      thumbnail: null,
-      video: null,
-      videoUrl: '',
-      thumbnailPreview: '',
-      coin: 0
+    storyId: '',
+    episodeNumber: '',
+    name: '',
+    description: '',
+    isFree: true,
+    type: 'episode',
+    thumbnail: null,
+    video: null,
+    videoUrl: '',
+    thumbnailPreview: '',
+    coin: 0
   })
 
   // Format image helper
@@ -147,17 +147,17 @@ const GlobalEpisodeListTable = () => {
 
   const resetForm = () => {
     setFormData({
-        storyId: '',
-        episodeNumber: '',
-        name: '',
-        description: '',
-        isFree: true,
-        type: 'episode',
-        thumbnail: null,
-        video: null,
-        videoUrl: '',
-        thumbnailPreview: '',
-        coin: 0
+      storyId: '',
+      episodeNumber: '',
+      name: '',
+      description: '',
+      isFree: true,
+      type: 'episode',
+      thumbnail: null,
+      video: null,
+      videoUrl: '',
+      thumbnailPreview: '',
+      coin: 0
     })
     setEditMode(false)
     setCurrentEpisode(null)
@@ -165,8 +165,8 @@ const GlobalEpisodeListTable = () => {
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
-      setOpen(false)
-      resetForm()
+    setOpen(false)
+    resetForm()
   }
 
   const fetchData = async () => {
@@ -176,17 +176,39 @@ const GlobalEpisodeListTable = () => {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
       }
-      
+
       // Case 1: If specific story selected, send storyId
       // Case 2: If 'all' or empty, don't send storyId
-      if(selectedStory && selectedStory !== 'all') {
-          params.storyId = selectedStory
+      if (selectedStory && selectedStory !== 'all') {
+        params.storyId = selectedStory
       }
 
       const { ok, result } = await getEpisodes(params)
 
       if (ok && result.success) {
-        setData(result.data.docs)
+        // Sort episodes: First by Story (group story-wise), then by Episode Number within each story
+        const sortedDocs = [...result.data.docs].sort((a, b) => {
+          // Get story IDs (handle both object and string formats)
+          const storyA = a.story?._id || a.story || ''
+          const storyB = b.story?._id || b.story || ''
+
+          // First sort by Story ID (to group episodes by story)
+          if (storyA !== storyB) {
+            return storyA.localeCompare(storyB)
+          }
+
+          // If same story, sort by episodeNumber
+          const epNumA = a.episodeNumber !== undefined ? Number(a.episodeNumber) : (a.type === 'trailer' ? 0 : 999)
+          const epNumB = b.episodeNumber !== undefined ? Number(b.episodeNumber) : (b.type === 'trailer' ? 0 : 999)
+
+          if (epNumA !== epNumB) {
+            return epNumA - epNumB
+          }
+
+          // If episodeNumber is same, sort by createdAt (upload order)
+          return new Date(a.createdAt) - new Date(b.createdAt)
+        })
+        setData(sortedDocs)
         setRowCount(result.data.totalDocs)
       } else {
         toast.error(result.message || 'Failed to fetch episodes')
@@ -215,29 +237,29 @@ const GlobalEpisodeListTable = () => {
             Are you sure you want to delete this episode?
           </Typography>
           <div className='flex gap-2 justify-end'>
-            <Button 
-                variant='contained' 
-                color='error' 
-                size='small'
-                onClick={async () => {
-                    closeToast()
-                    try {
-                        const { ok, result } = await deleteEpisode(id)
-                        if(ok && result.success) {
-                            toast.success('Episode deleted successfully')
-                            fetchData()
-                        } else {
-                            toast.error(result.message || 'Failed to delete episode')
-                        }
-                    } catch (error) {
-                        toast.error('Error deleting episode')
-                    }
-                }}
+            <Button
+              variant='contained'
+              color='error'
+              size='small'
+              onClick={async () => {
+                closeToast()
+                try {
+                  const { ok, result } = await deleteEpisode(id)
+                  if (ok && result.success) {
+                    toast.success('Episode deleted successfully')
+                    fetchData()
+                  } else {
+                    toast.error(result.message || 'Failed to delete episode')
+                  }
+                } catch (error) {
+                  toast.error('Error deleting episode')
+                }
+              }}
             >
-                Yes, Delete
+              Yes, Delete
             </Button>
             <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
-                Cancel
+              Cancel
             </Button>
           </div>
         </div>
@@ -255,56 +277,56 @@ const GlobalEpisodeListTable = () => {
     setEditMode(true)
     setCurrentEpisode(episode)
     setFormData({
-        storyId: episode.story?._id || episode.story || '',
-        episodeNumber: episode.episodeNumber,
-        name: episode.name || '',
-        description: episode.description || '',
-        isFree: episode.isFree || false,
-        type: episode.type || 'episode',
-        thumbnail: null,
-        video: null,
-        videoUrl: episode.videoUrl || '',
-        thumbnailPreview: getImageUrl(episode.thumbnail),
-        coin: episode.coin || 0
+      storyId: episode.story?._id || episode.story || '',
+      episodeNumber: episode.episodeNumber,
+      name: episode.name || '',
+      description: episode.description || '',
+      isFree: episode.isFree || false,
+      type: episode.type || 'episode',
+      thumbnail: null,
+      video: null,
+      videoUrl: episode.videoUrl || '',
+      thumbnailPreview: getImageUrl(episode.thumbnail),
+      coin: episode.coin || 0
     })
     setOpen(true)
-}
+  }
 
-const handleSubmit = async () => {
-    if(!formData.storyId) return toast.error('Story is required')
-    if(!formData.name.trim()) return toast.error('Name is required')
-    
+  const handleSubmit = async () => {
+    if (!formData.storyId) return toast.error('Story is required')
+    if (!formData.name.trim()) return toast.error('Name is required')
+
     let finalThumbnail = formData.thumbnail
 
     // Auto-capture thumbnail from video if missing
-    if(!finalThumbnail && formData.video) {
-        try {
-            const video = document.createElement('video')
-            video.src = URL.createObjectURL(formData.video)
-            video.muted = true
-            await new Promise((resolve) => {
-                video.onloadeddata = () => {
-                    video.currentTime = 1
-                    video.onseeked = () => {
-                        const canvas = document.createElement('canvas')
-                        canvas.width = 300
-                        canvas.height = 400
-                        const ctx = canvas.getContext('2d')
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-                        canvas.toBlob((blob) => {
-                            finalThumbnail = new File([blob], 'thumb.jpg', { type: 'image/jpeg' })
-                            resolve()
-                        }, 'image/jpeg')
-                    }
-                }
-            })
-        } catch (e) {
-            console.error('Thumbnail capture error', e)
-        }
+    if (!finalThumbnail && formData.video) {
+      try {
+        const video = document.createElement('video')
+        video.src = URL.createObjectURL(formData.video)
+        video.muted = true
+        await new Promise((resolve) => {
+          video.onloadeddata = () => {
+            video.currentTime = 1
+            video.onseeked = () => {
+              const canvas = document.createElement('canvas')
+              canvas.width = 300
+              canvas.height = 400
+              const ctx = canvas.getContext('2d')
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+              canvas.toBlob((blob) => {
+                finalThumbnail = new File([blob], 'thumb.jpg', { type: 'image/jpeg' })
+                resolve()
+              }, 'image/jpeg')
+            }
+          }
+        })
+      } catch (e) {
+        console.error('Thumbnail capture error', e)
+      }
     }
 
     const submitData = new FormData()
-    
+
     submitData.append('storyId', formData.storyId)
     submitData.append('episodeNumber', formData.episodeNumber)
     submitData.append('name', formData.name)
@@ -312,80 +334,80 @@ const handleSubmit = async () => {
     submitData.append('isFree', formData.isFree)
     submitData.append('type', formData.type)
     submitData.append('coin', formData.coin)
-    
-    if(formData.videoUrl) submitData.append('videoUrl', formData.videoUrl)
-    if(finalThumbnail) submitData.append('thumbnail', finalThumbnail)
-    if(formData.video) submitData.append('video', formData.video)
 
-    if(editMode) {
-        try {
-            const { ok, result } = await updateEpisode(currentEpisode._id, submitData)
-            if(ok && result.success) {
-                toast.success('Episode updated successfully')
-                fetchData()
-                handleClose()
-            } else {
-                toast.error(result.message || 'Failed to update episode')
-            }
-        } catch(err) {
-            toast.error('Error updating episode')
-        }
-    } else {
-        try {
-            const { ok, result } = await createEpisode(submitData)
-            if(ok && result.success) {
-                toast.success('Episode created successfully')
-                fetchData()
-                handleClose()
-            } else {
-                toast.error(result.message || 'Failed to create episode')
-            }
-        } catch(err) {
-             toast.error('Error creating episode')
-        }
-    }
-}
+    if (formData.videoUrl) submitData.append('videoUrl', formData.videoUrl)
+    if (finalThumbnail) submitData.append('thumbnail', finalThumbnail)
+    if (formData.video) submitData.append('video', formData.video)
 
-const handleFileChange = async (e, field) => {
-    const file = e.target.files[0]
-    if(file) {
-        if(field === 'thumbnail') {
-          setFormData({
-              ...formData,
-              thumbnail: file,
-              thumbnailPreview: URL.createObjectURL(file)
-          })
+    if (editMode) {
+      try {
+        const { ok, result } = await updateEpisode(currentEpisode._id, submitData)
+        if (ok && result.success) {
+          toast.success('Episode updated successfully')
+          fetchData()
+          handleClose()
         } else {
-          setFormData(prev => ({ ...prev, video: file }))
-          
-          // Auto-capture preview
-          if(!formData.thumbnail) {
-              try {
-                const video = document.createElement('video')
-                video.src = URL.createObjectURL(file)
-                video.muted = true
-                video.onloadeddata = () => {
-                    video.currentTime = 1
-                    video.onseeked = () => {
-                        const canvas = document.createElement('canvas')
-                        canvas.width = 300
-                        canvas.height = 400
-                        const ctx = canvas.getContext('2d')
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-                        const previewUrl = canvas.toDataURL('image/jpeg')
-                        setFormData(prev => ({
-                            ...prev,
-                            thumbnailPreview: previewUrl
-                        }))
-                    }
-                }
-              } catch (err) {
-                  console.error('Preview capture failed', err)
+          toast.error(result.message || 'Failed to update episode')
+        }
+      } catch (err) {
+        toast.error('Error updating episode')
+      }
+    } else {
+      try {
+        const { ok, result } = await createEpisode(submitData)
+        if (ok && result.success) {
+          toast.success('Episode created successfully')
+          fetchData()
+          handleClose()
+        } else {
+          toast.error(result.message || 'Failed to create episode')
+        }
+      } catch (err) {
+        toast.error('Error creating episode')
+      }
+    }
+  }
+
+  const handleFileChange = async (e, field) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (field === 'thumbnail') {
+        setFormData({
+          ...formData,
+          thumbnail: file,
+          thumbnailPreview: URL.createObjectURL(file)
+        })
+      } else {
+        setFormData(prev => ({ ...prev, video: file }))
+
+        // Auto-capture preview
+        if (!formData.thumbnail) {
+          try {
+            const video = document.createElement('video')
+            video.src = URL.createObjectURL(file)
+            video.muted = true
+            video.onloadeddata = () => {
+              video.currentTime = 1
+              video.onseeked = () => {
+                const canvas = document.createElement('canvas')
+                canvas.width = 300
+                canvas.height = 400
+                const ctx = canvas.getContext('2d')
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+                const previewUrl = canvas.toDataURL('image/jpeg')
+                setFormData(prev => ({
+                  ...prev,
+                  thumbnailPreview: previewUrl
+                }))
               }
+            }
+          } catch (err) {
+            console.error('Preview capture failed', err)
           }
         }
+      }
     }
-}
+  }
 
   const columns = useMemo(
     () => [
@@ -397,36 +419,36 @@ const handleFileChange = async (e, field) => {
       columnHelper.accessor('thumbnail', {
         header: 'Thumbnail',
         cell: ({ row }) => (
-            <VideoThumbnail 
-                videoUrl={row.original.videoUrl} 
-                thumbnailUrl={row.original.thumbnail} 
-                getImageUrl={getImageUrl} 
-                onClick={() => handlePlayVideo(row.original.videoUrl)}
-            />
+          <VideoThumbnail
+            videoUrl={row.original.videoUrl}
+            thumbnailUrl={row.original.thumbnail}
+            getImageUrl={getImageUrl}
+            onClick={() => handlePlayVideo(row.original.videoUrl)}
+          />
         )
       }),
       columnHelper.display({
         id: 'Video',
         header: 'Video',
         cell: ({ row }) => (
-            <div 
-                className='w-[100px] h-[140px] relative rounded-xl overflow-hidden cursor-pointer shadow-lg transition-all group bg-black flex items-center justify-center'
-                onClick={() => handlePlayVideo(row.original.videoUrl)}
-            >
-                <video 
-                    src={getImageUrl(row.original.videoUrl)} 
-                    className='w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity'
-                    muted
-                    loop
-                    onMouseOver={e => e.target.play()}
-                    onMouseOut={e => { e.target.pause(); e.target.currentTime = 0; }}
-                />
-                <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
-                     <div className='w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform'>
-                        <i className='tabler-player-play-filled text-error text-lg' />
-                     </div>
-                </div>
+          <div
+            className='w-[100px] h-[140px] relative rounded-xl overflow-hidden cursor-pointer shadow-lg transition-all group bg-black flex items-center justify-center'
+            onClick={() => handlePlayVideo(row.original.videoUrl)}
+          >
+            <video
+              src={getImageUrl(row.original.videoUrl)}
+              className='w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity'
+              muted
+              loop
+              onMouseOver={e => e.target.play()}
+              onMouseOut={e => { e.target.pause(); e.target.currentTime = 0; }}
+            />
+            <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
+              <div className='w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform'>
+                <i className='tabler-player-play-filled text-error text-lg' />
+              </div>
             </div>
+          </div>
         )
       }),
       columnHelper.accessor('name', {
@@ -472,6 +494,7 @@ const handleFileChange = async (e, field) => {
   const table = useReactTable({
     data,
     columns,
+    rowCount, // ✅ Added rowCount for TablePaginationComponent
     state: { pagination },
     manualPagination: true,
     pageCount: Math.ceil(rowCount / pagination.pageSize),
@@ -481,24 +504,24 @@ const handleFileChange = async (e, field) => {
 
   return (
     <Card>
-      <CardHeader 
-        title='Episode Management' 
+      <CardHeader
+        title='Episode Management'
         action={
-            <div className='flex gap-4'>
-               
-                <CustomTextField
-                    select
-                    value={selectedStory}
-                    onChange={(e) => setSelectedStory(e.target.value)}
-                    className='is-[250px]'
-                    label='Filter by Story'
-                >
-                    <MenuItem value='all'>All Stories</MenuItem>
-                    {stories.map(story => (
-                        <MenuItem key={story._id} value={story._id}>{story.title}</MenuItem>
-                    ))}
-                </CustomTextField>
-            </div>
+          <div className='flex gap-4'>
+
+            <CustomTextField
+              select
+              value={selectedStory}
+              onChange={(e) => setSelectedStory(e.target.value)}
+              className='is-[250px]'
+              label='Filter by Story'
+            >
+              <MenuItem value='all'>All Stories</MenuItem>
+              {stories.map(story => (
+                <MenuItem key={story._id} value={story._id}>{story.title}</MenuItem>
+              ))}
+            </CustomTextField>
+          </div>
         }
       />
       <div className='overflow-x-auto'>
@@ -533,123 +556,123 @@ const handleFileChange = async (e, field) => {
         onPageChange={(_, page) => table.setPageIndex(page)}
       />
 
-       {/* Add/Edit Episode Dialog */}
-       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
-          <DialogTitle>{editMode ? 'Edit Episode' : 'Add Episode'}</DialogTitle>
-          <DialogContent>
-              <div className='flex flex-col gap-4 p-4'>
-                  <div className='flex gap-4 justify-center'>
-                      <div className='flex flex-col items-center gap-2'>
-                        <Typography variant='caption'>Thumbnail</Typography>
-                        <Button component='label' variant='outlined' size='small'>
-                            Upload
-                            <input type='file' hidden accept='image/*' onChange={(e) => handleFileChange(e, 'thumbnail')} />
-                        </Button>
-                      </div>
-                  </div>
-                  
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                    <CustomTextField
-                        select
-                        fullWidth
-                        label='Select Story'
-                        value={formData.storyId}
-                        onChange={(e) => setFormData({...formData, storyId: e.target.value})}
-                    >
-                        {stories.map(story => (
-                             <MenuItem key={story._id} value={story._id}>{story.title}</MenuItem>
-                        ))}
-                    </CustomTextField>
-                    <CustomTextField
-                        fullWidth
-                        label='Episode Name'
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    />
-                     <CustomTextField
-                        fullWidth
-                        type='number'
-                        label='Episode Number'
-                        value={formData.episodeNumber}
-                        onChange={(e) => setFormData({...formData, episodeNumber: e.target.value})}
-                    />
-                     <CustomTextField
-                        fullWidth
-                        type='number'
-                        label='Coin'
-                        value={formData.coin}
-                        onChange={(e) => setFormData({...formData, coin: e.target.value})}
-                    />
-                  </div>
-
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-center'>
-                     <CustomTextField
-                        select
-                        fullWidth
-                        label='Type'
-                        value={formData.type}
-                        onChange={(e) => setFormData({...formData, type: e.target.value})}
-                    >
-                         <MenuItem value="episode">Episode</MenuItem>
-                         <MenuItem value="trailer">Trailer</MenuItem>
-                    </CustomTextField>
-                    <FormControlLabel
-                        control={
-                            <Switch 
-                                checked={formData.isFree} 
-                                onChange={(e) => setFormData({...formData, isFree: e.target.checked})} 
-                            />
-                        }
-                        label="Free Content"
-                      />
-                  </div>
-
-                  <CustomTextField
-                    fullWidth
-                    multiline
-                    rows={2}
-                    label='Description'
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  />
-                  
-                  <div className='flex flex-col gap-2 p-3 border rounded-lg bg-actionHover'>
-                       <Typography variant='subtitle2' className='font-semibold'>Video Content</Typography>
-                       <div className='flex gap-4 items-center'>
-                            <Button component='label' variant='contained' size='small' color='secondary'>
-                                Upload Video File
-                                <input type='file' hidden accept='video/*' onChange={(e) => handleFileChange(e, 'video')} />
-                            </Button>
-                            <Typography variant='caption'>{formData.video ? formData.video.name : 'No file selected'}</Typography>
-                       </div>
-                       <Typography variant='caption' className='text-center my-1'>- OR -</Typography>
-                       <CustomTextField
-                            fullWidth
-                            label='Video URL (External Link)'
-                            placeholder='https://...'
-                            value={formData.videoUrl}
-                            onChange={(e) => setFormData({...formData, videoUrl: e.target.value})}
-                        />
-                  </div>
+      {/* Add/Edit Episode Dialog */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
+        <DialogTitle>{editMode ? 'Edit Episode' : 'Add Episode'}</DialogTitle>
+        <DialogContent>
+          <div className='flex flex-col gap-4 p-4'>
+            <div className='flex gap-4 justify-center'>
+              <div className='flex flex-col items-center gap-2'>
+                <Typography variant='caption'>Thumbnail</Typography>
+                <Button component='label' variant='outlined' size='small'>
+                  Upload
+                  <input type='file' hidden accept='image/*' onChange={(e) => handleFileChange(e, 'thumbnail')} />
+                </Button>
               </div>
-          </DialogContent>
-          <DialogActions className='px-8 pb-8'>
-              <Button onClick={handleClose} color='secondary'>Cancel</Button>
-              <Button onClick={handleSubmit} variant='contained' className='min-is-[100px]'>{editMode ? 'Update' : 'Create'}</Button>
-          </DialogActions>
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <CustomTextField
+                select
+                fullWidth
+                label='Select Story'
+                value={formData.storyId}
+                onChange={(e) => setFormData({ ...formData, storyId: e.target.value })}
+              >
+                {stories.map(story => (
+                  <MenuItem key={story._id} value={story._id}>{story.title}</MenuItem>
+                ))}
+              </CustomTextField>
+              <CustomTextField
+                fullWidth
+                label='Episode Name'
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+              <CustomTextField
+                fullWidth
+                type='number'
+                label='Episode Number'
+                value={formData.episodeNumber}
+                onChange={(e) => setFormData({ ...formData, episodeNumber: e.target.value })}
+              />
+              <CustomTextField
+                fullWidth
+                type='number'
+                label='Coin'
+                value={formData.coin}
+                onChange={(e) => setFormData({ ...formData, coin: e.target.value })}
+              />
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-center'>
+              <CustomTextField
+                select
+                fullWidth
+                label='Type'
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              >
+                <MenuItem value="episode">Episode</MenuItem>
+                <MenuItem value="trailer">Trailer</MenuItem>
+              </CustomTextField>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isFree}
+                    onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
+                  />
+                }
+                label="Free Content"
+              />
+            </div>
+
+            <CustomTextField
+              fullWidth
+              multiline
+              rows={2}
+              label='Description'
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
+
+            <div className='flex flex-col gap-2 p-3 border rounded-lg bg-actionHover'>
+              <Typography variant='subtitle2' className='font-semibold'>Video Content</Typography>
+              <div className='flex gap-4 items-center'>
+                <Button component='label' variant='contained' size='small' color='secondary'>
+                  Upload Video File
+                  <input type='file' hidden accept='video/*' onChange={(e) => handleFileChange(e, 'video')} />
+                </Button>
+                <Typography variant='caption'>{formData.video ? formData.video.name : 'No file selected'}</Typography>
+              </div>
+              <Typography variant='caption' className='text-center my-1'>- OR -</Typography>
+              <CustomTextField
+                fullWidth
+                label='Video URL (External Link)'
+                placeholder='https://...'
+                value={formData.videoUrl}
+                onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+              />
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className='px-8 pb-8'>
+          <Button onClick={handleClose} color='secondary'>Cancel</Button>
+          <Button onClick={handleSubmit} variant='contained' className='min-is-[100px]'>{editMode ? 'Update' : 'Create'}</Button>
+        </DialogActions>
       </Dialog>
 
-       {/* Video Player Dialog */}
-       <Dialog open={videoDialogOpen} onClose={() => setVideoDialogOpen(false)} maxWidth='md' fullWidth>
-          <DialogTitle className='flex justify-between items-center bg-black text-white'>
-              <Typography variant='h6' color='inherit'>Video Preview</Typography>
-              <IconButton onClick={() => setVideoDialogOpen(false)} color='inherit'><i className='tabler-x' /></IconButton>
-          </DialogTitle>
-          <DialogContent className='p-0 bg-black flex justify-center items-center overflow-hidden'>
-              <div className='aspect-video w-full'>
-                <ReactPlayer url={selectedVideoUrl} controls width='100%' height='100%' playing={videoDialogOpen} />
-              </div>
-          </DialogContent>
+      {/* Video Player Dialog */}
+      <Dialog open={videoDialogOpen} onClose={() => setVideoDialogOpen(false)} maxWidth='md' fullWidth>
+        <DialogTitle className='flex justify-between items-center bg-black text-white'>
+          <Typography variant='h6' color='inherit'>Video Preview</Typography>
+          <IconButton onClick={() => setVideoDialogOpen(false)} color='inherit'><i className='tabler-x' /></IconButton>
+        </DialogTitle>
+        <DialogContent className='p-0 bg-black flex justify-center items-center overflow-hidden'>
+          <div className='aspect-video w-full'>
+            <ReactPlayer url={selectedVideoUrl} controls width='100%' height='100%' playing={videoDialogOpen} />
+          </div>
+        </DialogContent>
       </Dialog>
     </Card>
   )

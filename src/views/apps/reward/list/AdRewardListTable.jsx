@@ -105,40 +105,40 @@ const AdRewardListTable = () => {
 
   const handleDelete = (id) => {
     toast(
-        ({ closeToast }) => (
-            <div className='flex flex-col gap-4'>
-                <Typography variant='body1' className='font-medium'>
-                    Are you sure you want to delete this setting?
-                </Typography>
-                <div className='flex gap-2 justify-end'>
-                     <Button 
-                        variant='contained' 
-                        color='error' 
-                        size='small'
-                        onClick={async () => {
-                            closeToast()
-                            try {
-                                const { ok, result } = await deleteAdReward(id)
-                                if(ok && result.success) {
-                                    toast.success('Setting deleted successfully')
-                                    fetchData()
-                                } else {
-                                    toast.error(result.message || 'Failed to delete setting')
-                                }
-                            } catch (error) {
-                                toast.error('Error deleting setting')
-                            }
-                        }}
-                    >
-                        Yes, Delete
-                    </Button>
-                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
-                        Cancel
-                    </Button>
-                </div>
-            </div>
-        ),
-        { position: 'top-center', autoClose: false, closeButton: false }
+      ({ closeToast }) => (
+        <div className='flex flex-col gap-4'>
+          <Typography variant='body1' className='font-medium'>
+            Are you sure you want to delete this setting?
+          </Typography>
+          <div className='flex gap-2 justify-end'>
+            <Button
+              variant='contained'
+              color='error'
+              size='small'
+              onClick={async () => {
+                closeToast()
+                try {
+                  const { ok, result } = await deleteAdReward(id)
+                  if (ok && result.success) {
+                    toast.success('Setting deleted successfully')
+                    fetchData()
+                  } else {
+                    toast.error(result.message || 'Failed to delete setting')
+                  }
+                } catch (error) {
+                  toast.error('Error deleting setting')
+                }
+              }}
+            >
+              Yes, Delete
+            </Button>
+            <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ),
+      { position: 'top-center', autoClose: false, closeButton: false }
     )
   }
 
@@ -161,8 +161,8 @@ const AdRewardListTable = () => {
         )
       }),
       columnHelper.accessor('adDisplayInterval', {
-          header: 'Display Interval',
-          cell: ({ row }) => <Typography>{row.original.adDisplayInterval}</Typography>
+        header: 'Display Interval',
+        cell: ({ row }) => <Typography>{row.original.adDisplayInterval}</Typography>
       }),
       columnHelper.accessor('coinEarnedFromAd', {
         header: 'Coins Earned',
@@ -189,6 +189,7 @@ const AdRewardListTable = () => {
   const table = useReactTable({
     data,
     columns,
+    rowCount, // ✅ Added rowCount for TablePaginationComponent
     state: {
       pagination,
     },
@@ -200,8 +201,8 @@ const AdRewardListTable = () => {
 
   return (
     <Card>
-      <CardHeader 
-        title='Ads Coin Reward ' 
+      <CardHeader
+        title='Ads Coin Reward '
         action={
           <Button variant='contained' startIcon={<i className='tabler-plus' />} onClick={handleAddClick}>
             Add AdsReward
@@ -267,11 +268,11 @@ const AdRewardListTable = () => {
           table.setPageIndex(page)
         }}
       />
-      <AdRewardDialog 
-        open={dialogOpen} 
-        setOpen={setDialogOpen} 
-        reward={editingReward} 
-        handleSave={handleSave} 
+      <AdRewardDialog
+        open={dialogOpen}
+        setOpen={setDialogOpen}
+        reward={editingReward}
+        handleSave={handleSave}
       />
     </Card>
   )

@@ -75,7 +75,7 @@ const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...prop
 
 const userStatusObj = {
   active: 'success',
-  blocked: 'error', 
+  blocked: 'error',
 }
 
 const columnHelper = createColumnHelper()
@@ -125,18 +125,18 @@ const UserListTable = () => {
 
   const handleToggleBlock = async (id) => {
     try {
-        const { ok, result } = await toggleUserBlock(id)
-        if(ok && result.success) {
-            toast.success('User status updated successfully')
-            // Refresh data or update local state
-            setData(prev => prev.map(user => 
-                user._id === id ? { ...user, isBlocked: result.data.isBlocked } : user
-            ))
-        } else {
-            toast.error(result.message || 'Failed to update status')
-        }
+      const { ok, result } = await toggleUserBlock(id)
+      if (ok && result.success) {
+        toast.success('User status updated successfully')
+        // Refresh data or update local state
+        setData(prev => prev.map(user =>
+          user._id === id ? { ...user, isBlocked: result.data.isBlocked } : user
+        ))
+      } else {
+        toast.error(result.message || 'Failed to update status')
+      }
     } catch (error) {
-        toast.error('Error updating status')
+      toast.error('Error updating status')
     }
   }
 
@@ -148,21 +148,21 @@ const UserListTable = () => {
 
 
   const handleUpdateName = async (id, name) => {
-    if(!name.trim()) return toast.error('Name cannot be empty')
-    
+    if (!name.trim()) return toast.error('Name cannot be empty')
+
     try {
-        const { ok, result } = await updateUserName(id, name)
-        if(ok && result.success) {
-            toast.success('User name updated successfully')
-            setData(prev => prev.map(user => 
-                user._id === id ? { ...user, name: name } : user
-            ))
-            setEditDialogOpen(false)
-        } else {
-            toast.error(result.message || 'Failed to update name')
-        }
+      const { ok, result } = await updateUserName(id, name)
+      if (ok && result.success) {
+        toast.success('User name updated successfully')
+        setData(prev => prev.map(user =>
+          user._id === id ? { ...user, name: name } : user
+        ))
+        setEditDialogOpen(false)
+      } else {
+        toast.error(result.message || 'Failed to update name')
+      }
     } catch (error) {
-        toast.error('Error updating name')
+      toast.error('Error updating name')
     }
   }
 
@@ -181,12 +181,12 @@ const UserListTable = () => {
             </div>
           </div>
         )
-      }),    
+      }),
       columnHelper.accessor('email', {
         header: 'Email',
         cell: ({ row }) => <Typography>{row.original.email ? row.original.email : '-'}</Typography>
       }),
-       columnHelper.accessor('loginType', {
+      columnHelper.accessor('loginType', {
         header: 'loginType',
         cell: ({ row }) => <Typography>{row.original.loginType}</Typography>
       }),
@@ -198,7 +198,7 @@ const UserListTable = () => {
         header: 'Gender',
         cell: ({ row }) => <Typography className='capitalize'>{row.original.gender}</Typography>
       }),
-         columnHelper.accessor('coins', {
+      columnHelper.accessor('coins', {
         header: 'Coins',
         cell: ({ row }) => <Typography className='capitalize'>{row.original.coins}</Typography>
       }),
@@ -234,6 +234,7 @@ const UserListTable = () => {
   const table = useReactTable({
     data,
     columns,
+    rowCount, // ✅ Added rowCount for TablePaginationComponent
     state: {
       pagination,
     },
@@ -291,11 +292,11 @@ const UserListTable = () => {
           </thead>
           <tbody>
             {loading ? (
-                 <tr>
-                 <td colSpan={columns.length} className='text-center p-6'>
-                   <CircularProgress />
-                 </td>
-               </tr>
+              <tr>
+                <td colSpan={columns.length} className='text-center p-6'>
+                  <CircularProgress />
+                </td>
+              </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className='text-center'>
@@ -323,11 +324,11 @@ const UserListTable = () => {
           table.setPageIndex(page)
         }}
       />
-      <EditUserDialog 
-         open={editDialogOpen} 
-         setOpen={setEditDialogOpen} 
-         user={editingUser} 
-         handleUpdateName={handleUpdateName} 
+      <EditUserDialog
+        open={editDialogOpen}
+        setOpen={setEditDialogOpen}
+        user={editingUser}
+        handleUpdateName={handleUpdateName}
       />
 
     </Card>
