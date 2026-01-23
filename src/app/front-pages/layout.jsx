@@ -23,10 +23,13 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
+
 export const metadata = {
   title: 'Storybox',
-  description:
-    'Storybox'
+  description: 'Storybox',
+  icons: {
+    icon: '/images/favicon.png'
+  }
 }
 
 const Layout = async ({ children }) => {

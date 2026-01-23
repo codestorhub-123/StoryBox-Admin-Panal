@@ -17,22 +17,22 @@ const AuthProvider = ({ children, lang }) => {
 
       // Clone response to read body without consuming it for proper error handling
       const clone = response.clone()
-      
+
       try {
         const result = await clone.json()
-        
+
         // Check for specific error code 2002 or jwt expired message
         if (
-          response.status === 401 && 
+          response.status === 401 &&
           (result?.code === 2002 || result?.error === 'jwt expired' || result?.message === 'Invalid token')
         ) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('admin')
-            localStorage.removeItem('userData')
-            
-            // Redirect to login with correct locale
-            const loginUrl = getLocalizedUrl('/login', lang || 'en')
-            window.location.href = loginUrl
+          localStorage.removeItem('token')
+          localStorage.removeItem('admin')
+          localStorage.removeItem('userData')
+
+          // Redirect to login with correct locale
+          const loginUrl = getLocalizedUrl('/login', lang || 'en')
+          window.location.href = loginUrl
         }
       } catch (e) {
         // Ignore JSON parse errors for non-JSON responses

@@ -5,7 +5,8 @@ import { useEffect, useRef } from 'react'
 
 // Third-party Imports
 import styled from '@emotion/styled'
-
+// Next Imports
+import Image from 'next/image'
 // Component Imports
 import VuexyLogo from '@core/svg/Logo'
 
@@ -59,7 +60,15 @@ const Logo = ({ color }) => {
 
   return (
     <div className='flex items-center'>
-      <VuexyLogo className='text-2xl text-primary' />
+      <div className='relative flex items-center justify-center shrink-0' style={{ width: 38, height: 38 }}>
+        <Image
+          src='/images/mainLogo.png'
+          alt='StoryBox'
+          fill
+          priority
+          className='object-contain'
+        />
+      </div>
       <LogoText
         color={color}
         ref={logoTextRef}

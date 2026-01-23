@@ -1,11 +1,14 @@
 
 // Helper for authorization header
-const getAuthHeaders = () => {
+const getAuthHeaders = (isMultipart = false) => {
     const token = localStorage.getItem('token')
-    return {
-      'Content-Type': 'application/json',
+    const headers = {
       'Authorization': `Bearer ${token}` 
     }
+    if (!isMultipart) {
+      headers['Content-Type'] = 'application/json'
+    }
+    return headers
   }
 
 export const adminLogin = async (data) => {
@@ -479,6 +482,25 @@ export const getOrderHistory = async (params) => {
     const queryString = new URLSearchParams(params).toString()
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/order/history?${queryString}`, {
         headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const getSettings = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/setting/all`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+
+export const updateSettings = async (data) => {
+    const isFormData = data instanceof FormData
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/setting/update`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(isFormData),
+        body: isFormData ? data : JSON.stringify(data)
     })
     const result = await res.json()
     return { ok: res.ok, result }

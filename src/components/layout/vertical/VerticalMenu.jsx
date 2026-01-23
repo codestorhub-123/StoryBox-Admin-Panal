@@ -109,6 +109,9 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
              Language
           </MenuItem>
         
+          <MenuItem href={`/${locale}/apps/setting`} icon={<i className='tabler-settings' />}>
+             Settings
+          </MenuItem>
           <MenuItem href={`/${locale}/apps/reward`} icon={<i className='tabler-gift' />}>
              Reward
           </MenuItem>
