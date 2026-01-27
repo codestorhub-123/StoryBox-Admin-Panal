@@ -116,7 +116,7 @@ const StoryListTable = () => {
         category: '',
         language: '',
         rating: 0,
-        isExclusive: false,
+        isLocked: false,
         isCompleted: false,
         coverImage: null,
         bannerImage: null,
@@ -157,7 +157,7 @@ const StoryListTable = () => {
             category: '',
             language: '',
             rating: 0,
-            isExclusive: false,
+            isLocked: false,
             isCompleted: false,
             coverImage: null,
             bannerImage: null,
@@ -501,7 +501,7 @@ const StoryListTable = () => {
             category: story.category?._id || '',
             language: story.language?._id || '',
             rating: story.rating || 0,
-            isExclusive: story.isExclusive || false,
+            isLocked: story.isLocked || false,
             isCompleted: story.isCompleted || false,
             coverImage: null,
             bannerImage: null,
@@ -523,7 +523,7 @@ const StoryListTable = () => {
         submitData.append('category', formData.category)
         if (formData.language) submitData.append('language', formData.language)
         submitData.append('rating', formData.rating)
-        submitData.append('isExclusive', formData.isExclusive)
+        submitData.append('isLocked', formData.isLocked)
         submitData.append('isCompleted', formData.isCompleted)
 
         if (formData.coverImage) submitData.append('coverImage', formData.coverImage)
@@ -620,12 +620,33 @@ const StoryListTable = () => {
                     <Typography variant='body2'>{row.original.language?.name || '-'}</Typography>
                 )
             }),
+            columnHelper.accessor('isLocked', {
+                header: 'isLocked',
+                cell: ({ row }) => (
+                    <Chip
+                        label={row.original.isLocked ? 'Locked' : 'Unlocked'}
+                        variant='tonal'
+                        color={row.original.isLocked ? 'warning' : 'secondary'}
+                        size='small'
+                    />
+                )
+            }),
+            columnHelper.accessor('isCompleted', {
+                header: 'Status',
+                cell: ({ row }) => (
+                    <Chip
+                        label={row.original.isCompleted ? 'Completed' : 'Ongoing'}
+                        variant='tonal'
+                        color={row.original.isCompleted ? 'success' : 'info'}
+                        size='small'
+                    />
+                )
+            }),
             columnHelper.accessor('episodes', {
                 header: 'Episodes',
                 cell: ({ row }) => (
                     <div className='flex flex-col items-center gap-1'>
                         <div className='flex items-center gap-1'>
-                            {row.original.isCompleted && <i className='tabler-check text-success text-xs' title='Completed' />}
                             <Typography variant='body2' className='font-medium'>{row.original.totalEpisodes || 0}</Typography>
                         </div>
                         <Button
@@ -847,11 +868,11 @@ const StoryListTable = () => {
                             <FormControlLabel
                                 control={
                                     <Switch
-                                        checked={formData.isExclusive}
-                                        onChange={(e) => setFormData({ ...formData, isExclusive: e.target.checked })}
+                                        checked={formData.isLocked}
+                                        onChange={(e) => setFormData({ ...formData, isLocked: e.target.checked })}
                                     />
                                 }
-                                label="Exclusive"
+                                label="Locked"
                             />
                             <FormControlLabel
                                 control={
