@@ -49,7 +49,7 @@ import CustomAvatar from '@core/components/mui/Avatar'
 import TablePaginationComponent from '@components/TablePaginationComponent'
 
 // Service Imports
-import { getStories, createStory, updateStory, deleteStory, getCategories, getStoryDetail, createEpisode } from '@/services/ApiService'
+import { getStories, createStory, updateStory, deleteStory, getCategories, getStoryDetail, createEpisode, getLanguages } from '@/services/ApiService'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
@@ -85,6 +85,7 @@ const StoryListTable = () => {
     // States
     const [data, setData] = useState([])
     const [categories, setCategories] = useState([])
+    const [languages, setLanguages] = useState([])
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState({
         pageIndex: 0,
@@ -113,6 +114,7 @@ const StoryListTable = () => {
         uniqueId: '',
         description: '',
         category: '',
+        language: '',
         rating: 0,
         isExclusive: false,
         isCompleted: false,
@@ -153,6 +155,7 @@ const StoryListTable = () => {
             uniqueId: '',
             description: '',
             category: '',
+            language: '',
             rating: 0,
             isExclusive: false,
             isCompleted: false,
@@ -166,16 +169,22 @@ const StoryListTable = () => {
     }
 
     const handleOpen = async () => {
-        // Fetch categories if not already fetched
-        if (categories.length === 0) {
-            try {
+        // Fetch categories and languages if not already fetched
+        try {
+            if (categories.length === 0) {
                 const { ok, result } = await getCategories({ limit: 100 })
                 if (ok && result.success) {
                     setCategories(result.data.docs)
                 }
-            } catch (error) {
-                console.error('Error fetching categories')
             }
+            if (languages.length === 0) {
+                const { ok, result } = await getLanguages({ limit: 100 })
+                if (ok && result.success) {
+                    setLanguages(result.data.docs)
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error)
         }
         setOpen(true)
     }
@@ -467,16 +476,22 @@ const StoryListTable = () => {
         setEditMode(true)
         setCurrentStory(story)
 
-        // Fetch categories if not already fetched
-        if (categories.length === 0) {
-            try {
+        // Fetch categories and languages if not already fetched
+        try {
+            if (categories.length === 0) {
                 const { ok, result } = await getCategories({ limit: 100 })
                 if (ok && result.success) {
                     setCategories(result.data.docs)
                 }
-            } catch (error) {
-                console.error('Error fetching categories')
             }
+            if (languages.length === 0) {
+                const { ok, result } = await getLanguages({ limit: 100 })
+                if (ok && result.success) {
+                    setLanguages(result.data.docs)
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error)
         }
 
         setFormData({
@@ -484,6 +499,7 @@ const StoryListTable = () => {
             uniqueId: story.uniqueId,
             description: story.description,
             category: story.category?._id || '',
+            language: story.language?._id || '',
             rating: story.rating || 0,
             isExclusive: story.isExclusive || false,
             isCompleted: story.isCompleted || false,
@@ -502,9 +518,10 @@ const StoryListTable = () => {
         const submitData = new FormData()
 
         submitData.append('title', formData.title)
-        submitData.append('uniqueId', formData.uniqueId) // Assuming backend handles uniqueness or updates
+        submitData.append('uniqueId', formData.uniqueId)
         submitData.append('description', formData.description)
         submitData.append('category', formData.category)
+        if (formData.language) submitData.append('language', formData.language)
         submitData.append('rating', formData.rating)
         submitData.append('isExclusive', formData.isExclusive)
         submitData.append('isCompleted', formData.isCompleted)
@@ -595,6 +612,12 @@ const StoryListTable = () => {
                 header: 'Category',
                 cell: ({ row }) => (
                     <Typography variant='body2'>{row.original.category?.name || '-'}</Typography>
+                )
+            }),
+            columnHelper.accessor('language', {
+                header: 'Language',
+                cell: ({ row }) => (
+                    <Typography variant='body2'>{row.original.language?.name || '-'}</Typography>
                 )
             }),
             columnHelper.accessor('episodes', {
@@ -788,6 +811,17 @@ const StoryListTable = () => {
                             >
                                 {categories.map((cat) => (
                                     <MenuItem key={cat._id} value={cat._id}>{cat.name}</MenuItem>
+                                ))}
+                            </CustomTextField>
+                            <CustomTextField
+                                select
+                                fullWidth
+                                label='Language'
+                                value={formData.language}
+                                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                            >
+                                {languages.map((lang) => (
+                                    <MenuItem key={lang._id} value={lang._id}>{lang.name}</MenuItem>
                                 ))}
                             </CustomTextField>
                             <div className='flex items-center gap-4'>
