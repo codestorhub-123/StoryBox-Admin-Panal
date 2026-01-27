@@ -111,13 +111,13 @@ const StoryListTable = () => {
     // Form States
     const [formData, setFormData] = useState({
         title: '',
-        uniqueId: '',
         description: '',
         category: '',
         language: '',
         rating: 0,
         isLocked: false,
         isCompleted: false,
+        storyCoinPrice: 0,
         coverImage: null,
         bannerImage: null,
         coverPreview: '',
@@ -152,13 +152,13 @@ const StoryListTable = () => {
     const resetForm = () => {
         setFormData({
             title: '',
-            uniqueId: '',
             description: '',
             category: '',
             language: '',
             rating: 0,
             isLocked: false,
             isCompleted: false,
+            storyCoinPrice: 0,
             coverImage: null,
             bannerImage: null,
             coverPreview: '',
@@ -496,13 +496,13 @@ const StoryListTable = () => {
 
         setFormData({
             title: story.title,
-            uniqueId: story.uniqueId,
             description: story.description,
             category: story.category?._id || '',
             language: story.language?._id || '',
             rating: story.rating || 0,
-            isLocked: story.isLocked || false,
-            isCompleted: story.isCompleted || false,
+            isLocked: story.isLocked === true || String(story.isLocked) === 'true',
+            isCompleted: story.isCompleted === true || String(story.isCompleted) === 'true',
+            storyCoinPrice: story.storyCoinPrice || 0,
             coverImage: null,
             bannerImage: null,
             coverPreview: getImageUrl(story.coverImage),
@@ -518,13 +518,13 @@ const StoryListTable = () => {
         const submitData = new FormData()
 
         submitData.append('title', formData.title)
-        submitData.append('uniqueId', formData.uniqueId)
         submitData.append('description', formData.description)
         submitData.append('category', formData.category)
         if (formData.language) submitData.append('language', formData.language)
         submitData.append('rating', formData.rating)
         submitData.append('isLocked', formData.isLocked)
         submitData.append('isCompleted', formData.isCompleted)
+        submitData.append('storyCoinPrice', formData.storyCoinPrice)
 
         if (formData.coverImage) submitData.append('coverImage', formData.coverImage)
         if (formData.bannerImage) submitData.append('bannerImage', formData.bannerImage)
@@ -602,12 +602,6 @@ const StoryListTable = () => {
             //         </Typography>
             //     )
             //   }),
-            columnHelper.accessor('uniqueId', {
-                header: 'Unique ID',
-                cell: ({ row }) => (
-                    <Typography variant='body2'>{row.original.uniqueId}</Typography>
-                )
-            }),
             columnHelper.accessor('category', {
                 header: 'Category',
                 cell: ({ row }) => (
@@ -621,25 +615,40 @@ const StoryListTable = () => {
                 )
             }),
             columnHelper.accessor('isLocked', {
-                header: 'isLocked',
-                cell: ({ row }) => (
-                    <Chip
-                        label={row.original.isLocked ? 'Locked' : 'Unlocked'}
-                        variant='tonal'
-                        color={row.original.isLocked ? 'warning' : 'secondary'}
-                        size='small'
-                    />
-                )
+                header: 'Status (Lock)',
+                cell: ({ row }) => {
+                    const isLocked = row.original.isLocked === true || String(row.original.isLocked) === 'true';
+                    return (
+                        <Chip
+                            label={isLocked ? 'Locked' : 'Unlocked'}
+                            variant='tonal'
+                            color={isLocked ? 'warning' : 'secondary'}
+                            size='small'
+                        />
+                    );
+                }
             }),
             columnHelper.accessor('isCompleted', {
-                header: 'Status',
+                header: 'Publish Status',
+                cell: ({ row }) => {
+                    const isCompleted = row.original.isCompleted === true || String(row.original.isCompleted) === 'true';
+                    return (
+                        <Chip
+                            label={isCompleted ? 'Completed' : 'Ongoing'}
+                            variant='tonal'
+                            color={isCompleted ? 'success' : 'info'}
+                            size='small'
+                        />
+                    );
+                }
+            }),
+            columnHelper.accessor('storyCoinPrice', {
+                header: 'Price (Coins)',
                 cell: ({ row }) => (
-                    <Chip
-                        label={row.original.isCompleted ? 'Completed' : 'Ongoing'}
-                        variant='tonal'
-                        color={row.original.isCompleted ? 'success' : 'info'}
-                        size='small'
-                    />
+                    <div className='flex items-center gap-1'>
+                        <i className='tabler-coin text-warning text-sm' />
+                        <Typography variant='body2'>{row.original.storyCoinPrice || 0}</Typography>
+                    </div>
                 )
             }),
             columnHelper.accessor('episodes', {
@@ -674,6 +683,12 @@ const StoryListTable = () => {
                 header: 'Views',
                 cell: ({ row }) => (
                     <Typography variant='body2'>{row.original.totalViews || 0}</Typography>
+                )
+            }),
+            columnHelper.accessor('totalShares', {
+                header: 'Shares',
+                cell: ({ row }) => (
+                    <Typography variant='body2'>{row.original.totalShares || 0}</Typography>
                 )
             }),
             columnHelper.accessor('createdAt', {
@@ -818,12 +833,6 @@ const StoryListTable = () => {
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             />
                             <CustomTextField
-                                fullWidth
-                                label='Unique ID'
-                                value={formData.uniqueId}
-                                onChange={(e) => setFormData({ ...formData, uniqueId: e.target.value })}
-                            />
-                            <CustomTextField
                                 select
                                 fullWidth
                                 label='Category'
@@ -845,6 +854,13 @@ const StoryListTable = () => {
                                     <MenuItem key={lang._id} value={lang._id}>{lang.name}</MenuItem>
                                 ))}
                             </CustomTextField>
+                            <CustomTextField
+                                fullWidth
+                                type='number'
+                                label='Story Coin Price'
+                                value={formData.storyCoinPrice}
+                                onChange={(e) => setFormData({ ...formData, storyCoinPrice: e.target.value })}
+                            />
                             <div className='flex items-center gap-4'>
                                 <Typography>Rating</Typography>
                                 <Rating
