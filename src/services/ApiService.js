@@ -563,3 +563,13 @@ export const deleteReport = async (id) => {
     const result = await res.json()
     return { ok: res.ok, result }
 }
+
+// Dashboard API Services
+export const getDashboardStatistics = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/admin/dashboard`, {
+        headers: getAuthHeaders()
+    })
+    const result = await res.json()
+    return { ok: res.ok, result }
+}
+

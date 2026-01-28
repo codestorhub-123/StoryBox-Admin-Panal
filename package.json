@@ -4,7 +4,7 @@
   "license": "Commercial",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev -p 4005 --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
