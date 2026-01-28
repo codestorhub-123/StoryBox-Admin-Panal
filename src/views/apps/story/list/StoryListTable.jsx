@@ -856,7 +856,6 @@ const StoryListTable = () => {
                             </CustomTextField>
                             <CustomTextField
                                 fullWidth
-                                type='number'
                                 label='Story Coin Price'
                                 value={formData.storyCoinPrice}
                                 onChange={(e) => setFormData({ ...formData, storyCoinPrice: e.target.value })}
