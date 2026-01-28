@@ -67,7 +67,7 @@ const DashboardData = () => {
     return (
         <Grid container spacing={6}>
             {/* Stats Cards */}
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                 <CardStatVertical
                     title='Total Users'
                     stats={counts.totalUsers.toString()}
@@ -80,7 +80,7 @@ const DashboardData = () => {
                     chipVariant='tonal'
                 />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                 <CardStatVertical
                     title='Active VIP Users'
                     stats={counts.activeVipUsers.toString()}
@@ -93,7 +93,7 @@ const DashboardData = () => {
                     chipVariant='tonal'
                 />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                 <CardStatVertical
                     title='Total Stories'
                     stats={counts.totalStories.toString()}
@@ -106,7 +106,7 @@ const DashboardData = () => {
                     chipVariant='tonal'
                 />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                 <CardStatVertical
                     title='Total Episodes'
                     stats={counts.totalEpisodes.toString()}
@@ -119,19 +119,6 @@ const DashboardData = () => {
                     chipVariant='tonal'
                 />
             </Grid>
-            {/* <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
-                <CardStatVertical
-                    title='Total Coins'
-                    stats={counts.totalCoinsCredit.toString()}
-                    avatarColor='warning'
-                    avatarIcon='tabler-coin'
-                    avatarSkin='light'
-                    avatarSize={44}
-                    chipText='Credit'
-                    chipColor='warning'
-                    chipVariant='tonal'
-                />
-            </Grid> */}
 
             {/* Recent Users Table */}
             <Grid size={{ xs: 12, md: 6 }}>
