@@ -119,7 +119,7 @@ const DashboardData = () => {
                     chipVariant='tonal'
                 />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            {/* <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
                 <CardStatVertical
                     title='Total Coins'
                     stats={counts.totalCoinsCredit.toString()}
@@ -131,7 +131,7 @@ const DashboardData = () => {
                     chipColor='warning'
                     chipVariant='tonal'
                 />
-            </Grid>
+            </Grid> */}
 
             {/* Recent Users Table */}
             <Grid size={{ xs: 12, md: 6 }}>
