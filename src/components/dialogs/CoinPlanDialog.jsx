@@ -27,6 +27,7 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
     bonusCoin: '',
     isActive: true
   })
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     if (plan && open) {
@@ -38,6 +39,7 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
         bonusCoin: plan.bonusCoin || '',
         isActive: plan.isActive ?? true
       })
+      setErrors({})
     } else {
       setFormData({
         name: '',
@@ -47,20 +49,38 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
         bonusCoin: '',
         isActive: true
       })
+      setErrors({})
     }
   }, [plan, open])
 
   const handleClose = () => {
     setOpen(false)
+    setErrors({})
   }
 
   const onChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    // Clear error for this field if it exists
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }))
+    }
   }
 
   const onConfirm = () => {
-    // Validate or convert types if needed
+    // Validate
+    const newErrors = {}
+    if (!formData.name.trim()) newErrors.name = 'Plan Name is required'
+    if (!String(formData.price).trim()) newErrors.price = 'Price is required'
+    if (!String(formData.offerPrice).trim()) newErrors.offerPrice = 'Offer Price is required'
+    if (!String(formData.coin).trim()) newErrors.coin = 'Coin amount is required'
+    if (!String(formData.bonusCoin).trim()) newErrors.bonusCoin = 'Bonus Coin is required'
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
     const dataToSave = {
       ...formData,
       price: Number(formData.price),
@@ -95,6 +115,8 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
             placeholder="e.g. Premium Pack"
             value={formData.name}
             onChange={onChange}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <Box className="flex gap-4">
             <CustomTextField
@@ -105,6 +127,8 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="500"
               value={formData.price}
               onChange={onChange}
+              error={!!errors.price}
+              helperText={errors.price}
             />
             <CustomTextField
               fullWidth
@@ -114,6 +138,8 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="299"
               value={formData.offerPrice}
               onChange={onChange}
+              error={!!errors.offerPrice}
+              helperText={errors.offerPrice}
             />
           </Box>
           <Box className="flex gap-4">
@@ -125,6 +151,8 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="1000"
               value={formData.coin}
               onChange={onChange}
+              error={!!errors.coin}
+              helperText={errors.coin}
             />
             <CustomTextField
               fullWidth
@@ -134,6 +162,8 @@ const CoinPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="250"
               value={formData.bonusCoin}
               onChange={onChange}
+              error={!!errors.bonusCoin}
+              helperText={errors.bonusCoin}
             />
           </Box>
           <FormControlLabel

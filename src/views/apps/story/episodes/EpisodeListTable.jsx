@@ -88,6 +88,9 @@ const EpisodeListTable = () => {
     coin: 0
   })
 
+  // Validation State
+  const [errors, setErrors] = useState({})
+
   // Format image helper
   const getImageUrl = (path) => {
     if (!path) return ''
@@ -110,6 +113,7 @@ const EpisodeListTable = () => {
     })
     setEditMode(false)
     setCurrentEpisode(null)
+    setErrors({})
   }
 
   const handleOpen = () => setOpen(true)
@@ -238,7 +242,15 @@ const EpisodeListTable = () => {
       thumbnailPreview: getImageUrl(episode.thumbnail),
       coin: episode.coin || 0
     })
+    setErrors({})
     setOpen(true)
+  }
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value })
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: null }))
+    }
   }
 
   const handlePlayVideo = (videoUrl) => {
@@ -247,7 +259,17 @@ const EpisodeListTable = () => {
   }
 
   const handleSubmit = async () => {
-    if (!formData.name.trim()) return toast.error('Name is required')
+    const newErrors = {}
+    if (!formData.name.trim()) newErrors.name = 'Name is required'
+    if (!String(formData.episodeNumber).trim()) newErrors.episodeNumber = 'Episode Number is required'
+    if (formData.coin === '' || formData.coin < 0) newErrors.coin = 'Valid Coin amount is required'
+    if (!formData.description.trim()) newErrors.description = 'Description is required'
+    if (!formData.video && !formData.videoUrl.trim()) newErrors.video = 'Video file or External URL is required'
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
 
     let finalThumbnail = formData.thumbnail
 
@@ -332,6 +354,7 @@ const EpisodeListTable = () => {
         })
       } else {
         setFormData(prev => ({ ...prev, video: file }))
+        if (errors.video) setErrors(prev => ({ ...prev, video: null }))
 
         // Auto-capture preview if no thumbnail and it's a video file
         if (!formData.thumbnail) {
@@ -461,7 +484,7 @@ const EpisodeListTable = () => {
   const table = useReactTable({
     data,
     columns,
-    rowCount, // ✅ Added rowCount for TablePaginationComponent
+    rowCount,
     state: {
       pagination,
     },
@@ -562,21 +585,27 @@ const EpisodeListTable = () => {
                 fullWidth
                 label='Episode Name'
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                error={!!errors.name}
+                helperText={errors.name}
               />
               <CustomTextField
                 fullWidth
                 type='number'
                 label='Episode Number'
                 value={formData.episodeNumber}
-                onChange={(e) => setFormData({ ...formData, episodeNumber: e.target.value })}
+                onChange={(e) => handleInputChange('episodeNumber', e.target.value)}
+                error={!!errors.episodeNumber}
+                helperText={errors.episodeNumber}
               />
               <CustomTextField
                 fullWidth
                 type='number'
                 label='Coin'
                 value={formData.coin}
-                onChange={(e) => setFormData({ ...formData, coin: e.target.value })}
+                onChange={(e) => handleInputChange('coin', e.target.value)}
+                error={!!errors.coin}
+                helperText={errors.coin}
               />
               <div className='flex items-center gap-4'>
                 <FormControl component="fieldset">
@@ -584,7 +613,7 @@ const EpisodeListTable = () => {
                   <RadioGroup
                     row
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    onChange={(e) => handleInputChange('type', e.target.value)}
                   >
                     <FormControlLabel value="episode" control={<Radio />} label="Episode" />
                     <FormControlLabel value="trailer" control={<Radio />} label="Trailer" />
@@ -599,13 +628,15 @@ const EpisodeListTable = () => {
               rows={2}
               label='Description'
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              error={!!errors.description}
+              helperText={errors.description}
             />
 
-            <div className='flex flex-col gap-2'>
-              <Typography variant='subtitle2'>Video Content</Typography>
+            <div className={`flex flex-col gap-2 p-3 border rounded-lg ${errors.video ? 'border-error bg-error/10' : 'border-transparent'}`}>
+              <Typography variant='subtitle2' className={errors.video ? 'text-error' : ''}>Video Content {errors.video && '- Required'}</Typography>
               <div className='flex gap-4 items-center'>
-                <Button component='label' variant='contained' size='small' color='info'>
+                <Button component='label' variant='contained' size='small' color={errors.video ? 'error' : 'info'}>
                   Upload Video File
                   <input type='file' hidden accept='video/*' onChange={(e) => handleFileChange(e, 'video')} />
                 </Button>
@@ -617,8 +648,13 @@ const EpisodeListTable = () => {
                 label='Video URL (External Link)'
                 placeholder='https://...'
                 value={formData.videoUrl}
-                onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, videoUrl: e.target.value })
+                  if (errors.video) setErrors(prev => ({ ...prev, video: null }))
+                }}
+                error={!!errors.video}
               />
+              {errors.video && <Typography variant='caption' color='error'>{errors.video}</Typography>}
             </div>
 
             <div className='flex gap-4'>
@@ -632,16 +668,16 @@ const EpisodeListTable = () => {
                 label="Free Content"
               />
             </div>
-          </div>
-        </DialogContent>
+          </div >
+        </DialogContent >
         <DialogActions>
           <Button onClick={handleClose} color='secondary'>Cancel</Button>
           <Button onClick={handleSubmit} variant='contained'>{editMode ? 'Update' : 'Create'}</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog >
 
       {/* Video Player Dialog */}
-      <Dialog
+      < Dialog
         open={videoDialogOpen}
         onClose={() => setVideoDialogOpen(false)}
         maxWidth='md'
@@ -664,8 +700,8 @@ const EpisodeListTable = () => {
             />
           </div>
         </DialogContent>
-      </Dialog>
-    </Card>
+      </Dialog >
+    </Card >
   )
 }
 

@@ -24,6 +24,10 @@ const LanguageDialog = ({ open, setOpen, language, handleSave }) => {
     isActive: true
   })
 
+  const [errors, setErrors] = useState({
+    name: ''
+  })
+
   useEffect(() => {
     if (language && open) {
       setFormData({
@@ -48,52 +52,62 @@ const LanguageDialog = ({ open, setOpen, language, handleSave }) => {
   }
 
   const onConfirm = () => {
-      handleSave(language?._id, formData)
+    if (!formData.name.trim()) {
+      setErrors({ name: 'Name is required' })
+      return
+    }
+
+    setErrors({ name: '' })
+    handleSave(language?._id, formData)
   }
 
+
   return (
-    <Dialog 
-        open={open} 
-        onClose={handleClose}
-        maxWidth='xs'
-        fullWidth
-        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
-      >
-        <DialogTitle className='flex justify-between items-center plb-4 pli-6 border-be'>
-          <Typography variant='h5'>{language ? 'Edit Language' : 'Add New Language'}</Typography>
-          <IconButton onClick={handleClose} size='small'>
-             <i className='tabler-x' />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent className='pli-4 pbs-4 pbe-4'>
-            <Box className="flex flex-col gap-4 p-4">
-                <CustomTextField
-                    fullWidth
-                    autoComplete='off'
-                    label="Language Name"
-                    name="name"
-                    placeholder="e.g. Marathi"
-                    value={formData.name}
-                    onChange={onChange}
-                />
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={formData.isActive}
-                            onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                        />
-                    }
-                    label="Active Status"
-                />
-            </Box>
-        </DialogContent>
-        <DialogActions className='pbe-4 pli-6 justify-end'>
-            <Button onClick={handleClose} color="secondary" variant="tonal">Cancel</Button>
-            <Button onClick={onConfirm} variant="contained" endIcon={<i className='tabler-check' />}>
-                {language ? 'Update' : 'Create'}
-            </Button>
-        </DialogActions>
-      </Dialog>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth='xs'
+      fullWidth
+      sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+    >
+      <DialogTitle className='flex justify-between items-center plb-4 pli-6 border-be'>
+        <Typography variant='h5'>{language ? 'Edit Language' : 'Add New Language'}</Typography>
+        <IconButton onClick={handleClose} size='small'>
+          <i className='tabler-x' />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent className='pli-4 pbs-4 pbe-4'>
+        <Box className="flex flex-col gap-4 p-4">
+          <CustomTextField
+            fullWidth
+            autoComplete='off'
+            label="Language Name"
+            name="name"
+            placeholder="e.g. Marathi"  
+            value={formData.name}
+            onChange={onChange}
+            error={!!errors.name}
+            helperText={errors.name}
+            required
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formData.isActive}
+                onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+              />
+            }
+            label="Active Status"
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions className='pbe-4 pli-6 justify-end'>
+        <Button onClick={handleClose} color="secondary" variant="tonal">Cancel</Button>
+        <Button onClick={onConfirm} variant="contained" endIcon={<i className='tabler-check' />}>
+          {language ? 'Update' : 'Create'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

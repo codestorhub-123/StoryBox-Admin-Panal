@@ -15,6 +15,7 @@ const ReportReasonDialog = ({ open, setOpen, reason, handleSave }) => {
     const [formData, setFormData] = useState({
         title: ''
     })
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         if (reason) {
@@ -26,15 +27,18 @@ const ReportReasonDialog = ({ open, setOpen, reason, handleSave }) => {
                 title: ''
             })
         }
+        setErrors({})
     }, [reason, open])
 
     const handleClose = () => {
         setOpen(false)
         setFormData({ title: '' })
+        setErrors({})
     }
 
     const handleSubmit = () => {
         if (!formData.title.trim()) {
+            setErrors({ title: 'Title is required' })
             return
         }
         handleSave(reason?._id, formData)
@@ -49,8 +53,13 @@ const ReportReasonDialog = ({ open, setOpen, reason, handleSave }) => {
                         label='Title'
                         fullWidth
                         value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => {
+                            setFormData({ ...formData, title: e.target.value })
+                            if (errors.title) setErrors(prev => ({ ...prev, title: null }))
+                        }}
                         placeholder='e.g., Nudity or sexual activity'
+                        error={!!errors.title}
+                        helperText={errors.title}
                         required
                     />
                 </div>
@@ -62,7 +71,6 @@ const ReportReasonDialog = ({ open, setOpen, reason, handleSave }) => {
                 <Button
                     onClick={handleSubmit}
                     variant='contained'
-                    disabled={!formData.title.trim()}
                 >
                     {reason ? 'Update' : 'Create'}
                 </Button>

@@ -74,29 +74,32 @@ const CategoryListTable = () => {
   })
   const [rowCount, setRowCount] = useState(0)
   const [globalFilter, setGlobalFilter] = useState('')
-  
+
   // Dialog States
   const [open, setOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [currentCategory, setCurrentCategory] = useState(null)
-  
+
   // Form States
   const [formData, setFormData] = useState({
-      name: '',
-      image: null,
-      preview: ''
+    name: '',
+    image: null,
+    preview: ''
   })
 
+  const [errors, setErrors] = useState({})
+
   const resetForm = () => {
-      setFormData({ name: '', image: null, preview: '' })
-      setEditMode(false)
-      setCurrentCategory(null)
+    setFormData({ name: '', image: null, preview: '' })
+    setEditMode(false)
+    setCurrentCategory(null)
+    setErrors({})
   }
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
-      setOpen(false)
-      resetForm()
+    setOpen(false)
+    resetForm()
   }
 
   const fetchData = async () => {
@@ -128,111 +131,125 @@ const CategoryListTable = () => {
 
   const handleDelete = (id) => {
     toast(
-        ({ closeToast }) => (
-            <div className='flex flex-col gap-4'>
-                <Typography variant='body1' className='font-medium'>
-                    Are you sure you want to delete this category?
-                </Typography>
-                <div className='flex gap-2 justify-end'>
-                     <Button 
-                        variant='contained' 
-                        color='error' 
-                        size='small'
-                        onClick={async () => {
-                            closeToast()
-                            try {
-                                const { ok, result } = await deleteCategory(id)
-                                if(ok && result.success) {
-                                    toast.success('Category deleted successfully')
-                                    fetchData()
-                                } else {
-                                    toast.error(result.message || 'Failed to delete category')
-                                }
-                            } catch (error) {
-                                toast.error('Error deleting category')
-                            }
-                        }}
-                    >
-                        Yes, Delete
-                    </Button>
-                    <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
-                        Cancel
-                    </Button>
-                </div>
-            </div>
-        ),
-        { position: 'top-center', autoClose: false, closeButton: false }
+      ({ closeToast }) => (
+        <div className='flex flex-col gap-4'>
+          <Typography variant='body1' className='font-medium'>
+            Are you sure you want to delete this category?
+          </Typography>
+          <div className='flex gap-2 justify-end'>
+            <Button
+              variant='contained'
+              color='error'
+              size='small'
+              onClick={async () => {
+                closeToast()
+                try {
+                  const { ok, result } = await deleteCategory(id)
+                  if (ok && result.success) {
+                    toast.success('Category deleted successfully')
+                    fetchData()
+                  } else {
+                    toast.error(result.message || 'Failed to delete category')
+                  }
+                } catch (error) {
+                  toast.error('Error deleting category')
+                }
+              }}
+            >
+              Yes, Delete
+            </Button>
+            <Button variant='tonal' color='secondary' size='small' onClick={closeToast}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ),
+      { position: 'top-center', autoClose: false, closeButton: false }
     )
   }
 
   const handleEdit = (category) => {
-      setEditMode(true)
-      setCurrentCategory(category)
-      setFormData({
-          name: category.name,
-          image: null,
-          preview: category.image
-      })
-      setOpen(true)
+    setEditMode(true)
+    setCurrentCategory(category)
+    setFormData({
+      name: category.name,
+      image: null,
+      preview: category.image
+    })
+    setErrors({})
+    setOpen(true)
   }
 
   const handleSubmit = async () => {
-      if(!formData.name.trim()) return toast.error('Name is required')
-      
-      const submitData = new FormData()
-      
-      if(editMode) {
-          // Update
-          if(formData.name !== currentCategory.name) submitData.append('name', formData.name)
-          if(formData.image) submitData.append('image', formData.image)
-          
-          // If no changes
-          if(!formData.image && formData.name === currentCategory.name) {
-              handleClose()
-              return
-          }
+    const newErrors = {}
+    if (!formData.name.trim()) newErrors.name = 'Name is required'
 
-          try {
-              const { ok, result } = await updateCategory(currentCategory._id, submitData)
-              if(ok && result.success) {
-                  toast.success('Category updated successfully')
-                  fetchData()
-                  handleClose()
-              } else {
-                  toast.error(result.message || 'Failed to update category')
-              }
-          } catch(err) {
-              toast.error('Error updating category')
-          }
-      } else {
-          // Create
-          submitData.append('name', formData.name)
-          if(formData.image) submitData.append('image', formData.image)
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
 
-          try {
-              const { ok, result } = await createCategory(submitData)
-              if(ok && result.success) {
-                  toast.success('Category created successfully')
-                  fetchData()
-                  handleClose()
-              } else {
-                  toast.error(result.message || 'Failed to create category')
-              }
-          } catch(err) {
-               toast.error('Error creating category')
-          }
+    const submitData = new FormData()
+
+    if (editMode) {
+      // Update
+      if (formData.name !== currentCategory.name) submitData.append('name', formData.name)
+      if (formData.image) submitData.append('image', formData.image)
+
+      // If no changes
+      if (!formData.image && formData.name === currentCategory.name) {
+        handleClose()
+        return
       }
+
+      try {
+        const { ok, result } = await updateCategory(currentCategory._id, submitData)
+        if (ok && result.success) {
+          toast.success('Category updated successfully')
+          fetchData()
+          handleClose()
+        } else {
+          toast.error(result.message || 'Failed to update category')
+        }
+      } catch (err) {
+        toast.error('Error updating category')
+      }
+    } else {
+      // Create
+      submitData.append('name', formData.name)
+      if (formData.image) submitData.append('image', formData.image)
+
+      try {
+        const { ok, result } = await createCategory(submitData)
+        if (ok && result.success) {
+          toast.success('Category created successfully')
+          fetchData()
+          handleClose()
+        } else {
+          toast.error(result.message || 'Failed to create category')
+        }
+      } catch (err) {
+        toast.error('Error creating category')
+      }
+    }
   }
 
   const handleImageChange = (e) => {
-      const file = e.target.files[0]
-      if(file) {
-          setFormData({
-              ...formData,
-              image: file,
-              preview: URL.createObjectURL(file)
-          })
-      }
+    const file = e.target.files[0]
+    if (file) {
+      setFormData({
+        ...formData,
+        image: file,
+        preview: URL.createObjectURL(file)
+      })
+    }
+  }
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value })
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: null }))
+    }
   }
 
   const columns = useMemo(
@@ -241,45 +258,45 @@ const CategoryListTable = () => {
         id: 'no',
         header: 'No.',
         cell: ({ row }) => (
-            <Typography variant='body2'>
-                {(pagination.pageIndex * pagination.pageSize) + row.index + 1}
-            </Typography>
+          <Typography variant='body2'>
+            {(pagination.pageIndex * pagination.pageSize) + row.index + 1}
+          </Typography>
         )
       }),
       columnHelper.accessor('image', {
         header: 'Category Image',
         cell: ({ row }) => {
-            const baseUrl = process.env.NEXT_PUBLIC_URL.split('/api/v1')[0]
-            const imgUrl = row.original.image?.startsWith('http') 
-                ? row.original.image 
-                : `${baseUrl}/${row.original.image}`
-            
-            return <CustomAvatar src={imgUrl} size={50} variant='rounded' />
+          const baseUrl = process.env.NEXT_PUBLIC_URL.split('/api/v1')[0]
+          const imgUrl = row.original.image?.startsWith('http')
+            ? row.original.image
+            : `${baseUrl}/${row.original.image}`
+
+          return <CustomAvatar src={imgUrl} size={50} variant='rounded' />
         }
       }),
       columnHelper.accessor('name', {
         header: 'Category Name',
         cell: ({ row }) => (
-            <Typography color='text.primary' className='font-medium'>
-                {row.original.name}
-            </Typography>
+          <Typography color='text.primary' className='font-medium'>
+            {row.original.name}
+          </Typography>
         )
       }),
       columnHelper.accessor('totalStories', {
-          header: 'Total Movies',
-          cell: ({ row }) => (
-            <div className='flex items-center gap-2'>
-                <i className='tabler-movie text-textSecondary' />
-                <Typography>{row.original.totalStories || 0}</Typography>
-            </div>
-          )
+        header: 'Total Movies',
+        cell: ({ row }) => (
+          <div className='flex items-center gap-2'>
+            <i className='tabler-movie text-textSecondary' />
+            <Typography>{row.original.totalStories || 0}</Typography>
+          </div>
+        )
       }),
       columnHelper.accessor('createdAt', {
         header: 'Date',
         cell: ({ row }) => (
-            <Typography>
-                {new Date(row.original.createdAt).toLocaleDateString('en-GB')}
-            </Typography>
+          <Typography>
+            {new Date(row.original.createdAt).toLocaleDateString('en-GB')}
+          </Typography>
         )
       }),
       columnHelper.accessor('action', {
@@ -316,14 +333,14 @@ const CategoryListTable = () => {
 
   return (
     <Card>
-      <CardHeader 
-        title='Categories' 
+      <CardHeader
+        title='Categories'
         action={
-            <Button variant='contained' onClick={handleOpen} startIcon={<i className='tabler-plus' />}>
-                Add Category
-            </Button>
+          <Button variant='contained' onClick={handleOpen} startIcon={<i className='tabler-plus' />}>
+            Add Category
+          </Button>
         }
-        className='pbe-4' 
+        className='pbe-4'
       />
       <div className='flex justify-between flex-col items-start md:flex-row md:items-center p-6 border-bs gap-4'>
         <CustomTextField
@@ -352,11 +369,11 @@ const CategoryListTable = () => {
           </thead>
           <tbody>
             {loading ? (
-                 <tr>
-                 <td colSpan={columns.length} className='text-center p-6'>
-                   <CircularProgress />
-                 </td>
-               </tr>
+              <tr>
+                <td colSpan={columns.length} className='text-center p-6'>
+                  <CircularProgress />
+                </td>
+              </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className='text-center'>
@@ -386,30 +403,32 @@ const CategoryListTable = () => {
       />
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-          <DialogTitle>{editMode ? 'Edit Category' : 'Add Category'}</DialogTitle>
-          <DialogContent>
-              <div className='flex flex-col gap-4 p-4'>
-                  <div className='flex items-center justify-center mb-4'>
-                      <div className='flex flex-col items-center gap-2'>
-                        <CustomAvatar src={formData.preview} size={100} variant='rounded' />
-                        <Button component='label' variant='outlined' size='small'>
-                            Upload Image
-                            <input type='file' hidden accept='image/*' onChange={handleImageChange} />
-                        </Button>
-                      </div>
-                  </div>
-                  <CustomTextField
-                    fullWidth
-                    label='Category Name'
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
+        <DialogTitle>{editMode ? 'Edit Category' : 'Add Category'}</DialogTitle>
+        <DialogContent>
+          <div className='flex flex-col gap-4 p-4'>
+            <div className='flex items-center justify-center mb-4'>
+              <div className='flex flex-col items-center gap-2'>
+                <CustomAvatar src={formData.preview} size={100} variant='rounded' />
+                <Button component='label' variant='outlined' size='small'>
+                  Upload Image
+                  <input type='file' hidden accept='image/*' onChange={handleImageChange} />
+                </Button>
               </div>
-          </DialogContent>
-          <DialogActions>
-              <Button onClick={handleClose} color='secondary'>Cancel</Button>
-              <Button onClick={handleSubmit} variant='contained'>{editMode ? 'Update' : 'Create'}</Button>
-          </DialogActions>
+            </div>
+            <CustomTextField
+              fullWidth
+              label='Category Name'
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color='secondary'>Cancel</Button>
+          <Button onClick={handleSubmit} variant='contained'>{editMode ? 'Update' : 'Create'}</Button>
+        </DialogActions>
       </Dialog>
     </Card>
   )

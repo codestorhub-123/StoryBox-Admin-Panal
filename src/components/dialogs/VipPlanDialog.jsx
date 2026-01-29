@@ -30,6 +30,7 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
     tags: '',
     isActive: true
   })
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     if (plan && open) {
@@ -43,6 +44,7 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
         tags: plan.tags || '',
         isActive: plan.isActive ?? true
       })
+      setErrors({})
     } else {
       setFormData({
         name: '',
@@ -54,19 +56,38 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
         tags: '',
         isActive: true
       })
+      setErrors({})
     }
   }, [plan, open])
 
   const handleClose = () => {
     setOpen(false)
+    setErrors({})
   }
 
   const onChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    // Clear error for this field if it exists
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }))
+    }
   }
 
   const onConfirm = () => {
+    const newErrors = {}
+
+    if (!formData.name.trim()) newErrors.name = 'Plan Name is required'
+    if (!String(formData.validity).trim()) newErrors.validity = 'Validity is required'
+    if (!String(formData.price).trim()) newErrors.price = 'Price is required'
+    if (!String(formData.offerPrice).trim()) newErrors.offerPrice = 'Offer Price is required'
+    if (!String(formData.coins).trim()) newErrors.coins = 'Coins amount is required'
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
     const dataToSave = {
       ...formData,
       validity: Number(formData.validity),
@@ -101,6 +122,8 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
             placeholder="e.g. Gold Monthly"
             value={formData.name}
             onChange={onChange}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <Box className="flex gap-4">
             <CustomTextField
@@ -111,6 +134,8 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="1"
               value={formData.validity}
               onChange={onChange}
+              error={!!errors.validity}
+              helperText={errors.validity}
             />
             <CustomTextField
               select
@@ -133,6 +158,8 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="200"
               value={formData.price}
               onChange={onChange}
+              error={!!errors.price}
+              helperText={errors.price}
             />
             <CustomTextField
               fullWidth
@@ -142,6 +169,8 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="99"
               value={formData.offerPrice}
               onChange={onChange}
+              error={!!errors.offerPrice}
+              helperText={errors.offerPrice}
             />
           </Box>
           <Box className="flex gap-4">
@@ -153,6 +182,8 @@ const VipPlanDialog = ({ open, setOpen, plan, handleSave }) => {
               placeholder="500"
               value={formData.coins}
               onChange={onChange}
+              error={!!errors.coins}
+              helperText={errors.coins}
             />
             <CustomTextField
               fullWidth

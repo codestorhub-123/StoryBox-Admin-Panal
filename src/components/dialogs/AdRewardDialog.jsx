@@ -22,6 +22,12 @@ const AdRewardDialog = ({ open, setOpen, reward, handleSave }) => {
     adDisplayInterval: '',
     coinEarnedFromAd: ''
   })
+  const [errors, setErrors] = useState({
+    adLabel: '',
+    adDisplayInterval: '',
+    coinEarnedFromAd: ''
+  })
+
 
   useEffect(() => {
     if (reward && open) {
@@ -49,11 +55,45 @@ const AdRewardDialog = ({ open, setOpen, reward, handleSave }) => {
   }
 
   const onConfirm = () => {
+    const newErrors = {
+      adLabel: '',
+      adDisplayInterval: '',
+      coinEarnedFromAd: ''
+    }
+
+    if (!formData.adLabel.trim()) {
+      newErrors.adLabel = 'Ad Label is required'
+    }
+
+    if (!formData.adDisplayInterval.trim()) {
+      newErrors.adDisplayInterval = 'Display Interval is required'
+    }
+
+    if (!formData.coinEarnedFromAd.trim()) {
+      newErrors.coinEarnedFromAd = 'Coins Earned is required'
+    }
+
+    if (
+      newErrors.adLabel ||
+      newErrors.adDisplayInterval ||
+      newErrors.coinEarnedFromAd
+    ) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({
+      adLabel: '',
+      adDisplayInterval: '',
+      coinEarnedFromAd: ''
+    })
+
     const dataToSave = {
       ...formData,
       adDisplayInterval: Number(formData.adDisplayInterval),
       coinEarnedFromAd: Number(formData.coinEarnedFromAd)
     }
+
     handleSave(reward?._id, dataToSave)
   }
 
@@ -82,6 +122,8 @@ const AdRewardDialog = ({ open, setOpen, reward, handleSave }) => {
             value={formData.adLabel}
             onChange={onChange}
             disabled={!!reward}
+            error={!!errors.adLabel}
+            helperText={errors.adLabel}
           />
           <CustomTextField
             fullWidth
@@ -91,6 +133,8 @@ const AdRewardDialog = ({ open, setOpen, reward, handleSave }) => {
             placeholder="300"
             value={formData.adDisplayInterval}
             onChange={onChange}
+            error={!!errors.adDisplayInterval}
+            helperText={errors.adDisplayInterval}
           />
           <CustomTextField
             fullWidth
@@ -100,6 +144,8 @@ const AdRewardDialog = ({ open, setOpen, reward, handleSave }) => {
             placeholder="50"
             value={formData.coinEarnedFromAd}
             onChange={onChange}
+            error={!!errors.coinEarnedFromAd}
+            helperText={errors.coinEarnedFromAd}
           />
         </Box>
       </DialogContent>

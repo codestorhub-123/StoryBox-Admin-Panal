@@ -22,6 +22,10 @@ const DailyRewardDialog = ({ open, setOpen, reward, handleSave }) => {
     day: '',
     dailyRewardCoin: ''
   })
+  const [errors, setErrors] = useState({
+    day: '',
+    dailyRewardCoin: ''
+  })
 
   useEffect(() => {
     if (reward && open) {
@@ -44,9 +48,39 @@ const DailyRewardDialog = ({ open, setOpen, reward, handleSave }) => {
   const onChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }))
+    }
   }
 
   const onConfirm = () => {
+    const newErrors = {
+      day: '',
+      dailyRewardCoin: ''
+    }
+
+    if (!String(formData.day).trim()) {
+      newErrors.day = 'Day is required'
+    }
+
+    if (!String(formData.dailyRewardCoin).trim()) {
+      newErrors.dailyRewardCoin = 'Coins Reward is required'
+    }
+
+    if (
+      newErrors.day ||
+      newErrors.dailyRewardCoin
+    ) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({
+      day: '',
+      dailyRewardCoin: ''
+    })
+
     const dataToSave = {
       day: Number(formData.day),
       dailyRewardCoin: Number(formData.dailyRewardCoin)
@@ -78,6 +112,8 @@ const DailyRewardDialog = ({ open, setOpen, reward, handleSave }) => {
             value={formData.day}
             onChange={onChange}
             disabled={!!reward}
+            error={!!errors.day}
+            helperText={errors.day}
           >
             {[1, 2, 3, 4, 5, 6, 7].map(d => (
               <MenuItem key={d} value={d}>Day {d}</MenuItem>
@@ -91,6 +127,8 @@ const DailyRewardDialog = ({ open, setOpen, reward, handleSave }) => {
             placeholder="10"
             value={formData.dailyRewardCoin}
             onChange={onChange}
+            error={!!errors.dailyRewardCoin}
+            helperText={errors.dailyRewardCoin}
           />
         </Box>
       </DialogContent>

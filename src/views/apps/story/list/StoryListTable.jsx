@@ -124,6 +124,9 @@ const StoryListTable = () => {
         bannerPreview: ''
     })
 
+    // Validation State
+    const [errors, setErrors] = useState({})
+
     // Add Episode States
     const [addEpisodeOpen, setAddEpisodeOpen] = useState(false)
     const [selectedStoryId, setSelectedStoryId] = useState('')
@@ -166,6 +169,7 @@ const StoryListTable = () => {
         })
         setEditMode(false)
         setCurrentStory(null)
+        setErrors({})
     }
 
     const handleOpen = async () => {
@@ -264,6 +268,7 @@ const StoryListTable = () => {
         setSelectedStoryId(story._id)
         setEpisodeDialogOpen(true)
         setEpisodeLoading(true)
+        setErrors({}) // Clear errors
         try {
             const { ok, result } = await getStoryDetail(story._id)
             if (ok && result.success) {
@@ -300,7 +305,30 @@ const StoryListTable = () => {
     }
 
     const handleAddEpisodeSubmit = async () => {
-        if (!episodeFormData.name.trim()) return toast.error('Episode name is required')
+        const newErrors = {}
+        if (!episodeFormData.name.trim()) newErrors.episodeName = 'Episode name is required'
+        if (!String(episodeFormData.episodeNumber).trim()) newErrors.episodeNum = 'Episode number is required'
+        if (episodeFormData.coin === '' || Number(episodeFormData.coin) < 0) newErrors.coin = 'Valid coin amount is required'
+
+        // Validate Video: Either File or URL must be present
+        // In edit mode, we might not change the video, so we need to be careful. 
+        // But here we rely on the fact that if it's an edit, the backend might handle it, 
+        // OR we should check if we have previous data. 
+        // For now, let's assume if it's a new episode, one is required.
+        // If editing, we might have an existing videoUrl.
+        if (!isEpisodeEditMode && !episodeFormData.video && !episodeFormData.videoUrl.trim()) {
+            // We can use a general error or attach it to one of the fields.
+            // Since we don't have a specific field for 'video container' error, we'll use toast for this specific complex check 
+            // or add a general error field if we had a place for it.
+            // Let's rely on Toast for the "Video Missing" part as it's a complex composite field, 
+            // or we could mark the URL field as error.
+            newErrors.videoUrl = 'Video file or URL is required'
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors)
+            return
+        }
 
         let finalThumbnail = episodeFormData.thumbnail
 
@@ -371,6 +399,7 @@ const StoryListTable = () => {
     const handleEditEpisode = (episode) => {
         setIsEpisodeEditMode(true)
         setEditingEpisodeId(episode._id)
+        setErrors({}) // Clear errors
         setEpisodeFormData({
             episodeNumber: episode.episodeNumber,
             name: episode.name || '',
@@ -508,12 +537,31 @@ const StoryListTable = () => {
             coverPreview: getImageUrl(story.coverImage),
             bannerPreview: getImageUrl(story.bannerImage)
         })
+        setErrors({})
         setOpen(true)
     }
 
+    const handleInputChange = (field, value) => {
+        setFormData({ ...formData, [field]: value })
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: null }))
+        }
+    }
+
     const handleSubmit = async () => {
-        if (!formData.title.trim()) return toast.error('Title is required')
-        if (!formData.category) return toast.error('Category is required')
+        const newErrors = {}
+        if (!formData.title.trim()) newErrors.title = 'Title is required'
+        if (!formData.category) newErrors.category = 'Category is required'
+        if (!formData.language) newErrors.language = 'Language is required'
+        if (!formData.description.trim()) newErrors.description = 'Description is required'
+        // Basic validation for images if needed. If edit mode, they might exist already.
+        if (!editMode && !formData.coverPreview) newErrors.coverPreview = 'Cover Image is required'
+        if (!editMode && !formData.bannerPreview) newErrors.bannerPreview = 'Banner Image is required'
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors)
+            return
+        }
 
         const submitData = new FormData()
 
@@ -566,6 +614,11 @@ const StoryListTable = () => {
                 [field]: file,
                 [field === 'coverImage' ? 'coverPreview' : 'bannerPreview']: URL.createObjectURL(file)
             })
+            // Clear error if exists
+            const previewField = field === 'coverImage' ? 'coverPreview' : 'bannerPreview'
+            if (errors[previewField]) {
+                setErrors(prev => ({ ...prev, [previewField]: null }))
+            }
         }
     }
 
@@ -808,20 +861,22 @@ const StoryListTable = () => {
                     <div className='flex flex-col gap-4 p-4'>
                         <div className='flex gap-4'>
                             <div className='flex-1 flex flex-col items-center gap-2'>
-                                <Typography variant='caption'>Cover Image</Typography>
+                                <Typography variant='caption' color={errors.coverPreview ? 'error' : 'textSecondary'}>Cover Image</Typography>
                                 <CustomAvatar src={formData.coverPreview} size={100} variant='rounded' />
-                                <Button component='label' variant='outlined' size='small'>
+                                <Button component='label' variant='outlined' size='small' color={errors.coverPreview ? 'error' : 'primary'}>
                                     Upload
                                     <input type='file' hidden accept='image/*' onChange={(e) => handleFileChange(e, 'coverImage')} />
                                 </Button>
+                                {errors.coverPreview && <Typography variant='caption' color='error'>{errors.coverPreview}</Typography>}
                             </div>
                             <div className='flex-1 flex flex-col items-center gap-2'>
-                                <Typography variant='caption'>Banner Image</Typography>
+                                <Typography variant='caption' color={errors.bannerPreview ? 'error' : 'textSecondary'}>Banner Image</Typography>
                                 <CustomAvatar src={formData.bannerPreview} size={100} variant='rounded' className='is-full' />
-                                <Button component='label' variant='outlined' size='small'>
+                                <Button component='label' variant='outlined' size='small' color={errors.bannerPreview ? 'error' : 'primary'}>
                                     Upload
                                     <input type='file' hidden accept='image/*' onChange={(e) => handleFileChange(e, 'bannerImage')} />
                                 </Button>
+                                {errors.bannerPreview && <Typography variant='caption' color='error'>{errors.bannerPreview}</Typography>}
                             </div>
                         </div>
 
@@ -830,14 +885,18 @@ const StoryListTable = () => {
                                 fullWidth
                                 label='Story Title'
                                 value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                onChange={(e) => handleInputChange('title', e.target.value)}
+                                error={!!errors.title}
+                                helperText={errors.title}
                             />
                             <CustomTextField
                                 select
                                 fullWidth
                                 label='Category'
                                 value={formData.category}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                onChange={(e) => handleInputChange('category', e.target.value)}
+                                error={!!errors.category}
+                                helperText={errors.category}
                             >
                                 {categories.map((cat) => (
                                     <MenuItem key={cat._id} value={cat._id}>{cat.name}</MenuItem>
@@ -848,7 +907,9 @@ const StoryListTable = () => {
                                 fullWidth
                                 label='Language'
                                 value={formData.language}
-                                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                                onChange={(e) => handleInputChange('language', e.target.value)}
+                                error={!!errors.language}
+                                helperText={errors.language}
                             >
                                 {languages.map((lang) => (
                                     <MenuItem key={lang._id} value={lang._id}>{lang.name}</MenuItem>
@@ -858,14 +919,14 @@ const StoryListTable = () => {
                                 fullWidth
                                 label='Story Coin Price'
                                 value={formData.storyCoinPrice}
-                                onChange={(e) => setFormData({ ...formData, storyCoinPrice: e.target.value })}
+                                onChange={(e) => handleInputChange('storyCoinPrice', e.target.value)}
                             />
                             <div className='flex items-center gap-4'>
                                 <Typography>Rating</Typography>
                                 <Rating
                                     value={Number(formData.rating)}
                                     precision={0.5}
-                                    onChange={(e, newValue) => setFormData({ ...formData, rating: newValue })}
+                                    onChange={(e, newValue) => handleInputChange('rating', newValue)}
                                 />
                             </div>
                         </div>
@@ -876,7 +937,9 @@ const StoryListTable = () => {
                             rows={3}
                             label='Description'
                             value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            error={!!errors.description}
+                            helperText={errors.description}
                         />
 
                         <div className='flex gap-4'>
@@ -1061,7 +1124,7 @@ const StoryListTable = () => {
             </Dialog>
 
             {/* Add Episode Dialog */}
-            <Dialog open={addEpisodeOpen} onClose={() => { setAddEpisodeOpen(false); setIsEpisodeEditMode(false); }} fullWidth maxWidth='md'>
+            <Dialog open={addEpisodeOpen} onClose={() => { setAddEpisodeOpen(false); setIsEpisodeEditMode(false); setErrors({}) }} fullWidth maxWidth='md'>
                 <DialogTitle>{isEpisodeEditMode ? 'Edit Episode' : `Add New Episode to ${selectedStoryTitle}`}</DialogTitle>
                 <DialogContent>
                     <div className='flex flex-col gap-4 p-4'>
@@ -1081,14 +1144,24 @@ const StoryListTable = () => {
                                 fullWidth
                                 label='Episode Name'
                                 value={episodeFormData.name}
-                                onChange={(e) => setEpisodeFormData({ ...episodeFormData, name: e.target.value })}
+                                onChange={(e) => {
+                                    setEpisodeFormData({ ...episodeFormData, name: e.target.value })
+                                    if (errors.episodeName) setErrors(prev => ({ ...prev, episodeName: null }))
+                                }}
+                                error={!!errors.episodeName}
+                                helperText={errors.episodeName}
                             />
                             <CustomTextField
                                 fullWidth
                                 type='number'
                                 label='Episode Number'
                                 value={episodeFormData.episodeNumber}
-                                onChange={(e) => setEpisodeFormData({ ...episodeFormData, episodeNumber: e.target.value })}
+                                onChange={(e) => {
+                                    setEpisodeFormData({ ...episodeFormData, episodeNumber: e.target.value })
+                                    if (errors.episodeNum) setErrors(prev => ({ ...prev, episodeNum: null }))
+                                }}
+                                error={!!errors.episodeNum}
+                                helperText={errors.episodeNum}
                             />
                             <CustomTextField
                                 fullWidth
